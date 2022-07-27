@@ -438,12 +438,7 @@ namespace Rufilities.Strings.Dialogs
 			this.bCancel = new ToolStripButton();
 			this.toolStripSeparator1 = new ToolStripSeparator();
 			this.bInsert = new ToolStripDropDownButton();
-			this.tsmControls = new ToolStripMenuItem();
-			this.tsmNames = new ToolStripMenuItem();
-			this.tsmStats = new ToolStripMenuItem();
 			this.tsmLetters = new ToolStripMenuItem();
-			this.tsmValues = new ToolStripMenuItem();
-			this.moneyToolStripMenuItem = new ToolStripMenuItem();
 			this.mainSplit = new SplitContainer();
 			this.ilTree = new ImageList(this.components);
 			this.tbString = new TextBox();
@@ -534,11 +529,7 @@ namespace Rufilities.Strings.Dialogs
 			this.toolStripSeparator1.Size = new Size(6, 25);
 			this.bInsert.DropDownItems.AddRange(new ToolStripItem[]
 			{
-				this.tsmControls,
-				this.tsmNames,
-				this.tsmStats,
 				this.tsmLetters,
-				this.tsmValues
 			});
 			this.bInsert.Enabled = false;
 			this.bInsert.Image = Resources.bInsert_Image;
@@ -546,28 +537,9 @@ namespace Rufilities.Strings.Dialogs
 			this.bInsert.Name = "bInsert";
 			this.bInsert.Size = new Size(65, 22);
 			this.bInsert.Text = "Insert";
-			this.tsmControls.Name = "tsmControls";
-			this.tsmControls.Size = new Size(165, 22);
-			this.tsmControls.Text = "Controls";
-			this.tsmNames.Name = "tsmNames";
-			this.tsmNames.Size = new Size(165, 22);
-			this.tsmNames.Text = "Character Names";
-			this.tsmStats.Name = "tsmStats";
-			this.tsmStats.Size = new Size(165, 22);
-			this.tsmStats.Text = "Character Stats";
 			this.tsmLetters.Name = "tsmLetters";
 			this.tsmLetters.Size = new Size(165, 22);
 			this.tsmLetters.Text = "PSI Levels";
-			this.tsmValues.DropDownItems.AddRange(new ToolStripItem[]
-			{
-				this.moneyToolStripMenuItem
-			});
-			this.tsmValues.Name = "tsmValues";
-			this.tsmValues.Size = new Size(165, 22);
-			this.tsmValues.Text = "Values";
-			this.moneyToolStripMenuItem.Name = "moneyToolStripMenuItem";
-			this.moneyToolStripMenuItem.Size = new Size(111, 22);
-			this.moneyToolStripMenuItem.Text = "Money";
 			this.mainSplit.Dock = DockStyle.Fill;
 			this.mainSplit.Location = new Point(0, 25);
 			this.mainSplit.Name = "mainSplit";
@@ -687,23 +659,8 @@ namespace Rufilities.Strings.Dialogs
 		// Token: 0x0400005F RID: 95
 		private ToolStripDropDownButton bInsert;
 
-		// Token: 0x04000060 RID: 96
-		private ToolStripMenuItem tsmNames;
-
-		// Token: 0x04000061 RID: 97
-		private ToolStripMenuItem tsmStats;
-
 		// Token: 0x04000062 RID: 98
 		private ToolStripMenuItem tsmLetters;
-
-		// Token: 0x04000063 RID: 99
-		private ToolStripMenuItem tsmValues;
-
-		// Token: 0x04000064 RID: 100
-		private ToolStripMenuItem moneyToolStripMenuItem;
-
-		// Token: 0x04000065 RID: 101
-		private ToolStripMenuItem tsmControls;
 
 		// Token: 0x04000066 RID: 102
 		private DraggableTreeView tvStrings;
