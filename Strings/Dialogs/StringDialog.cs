@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using Rufilities.Properties;
 using Rufilities.Utility;
 using Rufilities.Utility.Controls;
 using Rufilities.Utility.Dialogs;
@@ -12,7 +13,7 @@ namespace Rufilities.Strings.Dialogs
 	public class StringDialog : Form
 	{
 		// Token: 0x17000013 RID: 19
-		// (get) Token: 0x0600007D RID: 125 RVA: 0x00005150 File Offset: 0x00003350
+		// (get) Token: 0x0600007D RID: 125 RVA: 0x00005170 File Offset: 0x00003370
 		public RufiniString SelectedString
 		{
 			get
@@ -22,7 +23,7 @@ namespace Rufilities.Strings.Dialogs
 		}
 
 		// Token: 0x17000014 RID: 20
-		// (get) Token: 0x0600007E RID: 126 RVA: 0x00005158 File Offset: 0x00003358
+		// (get) Token: 0x0600007E RID: 126 RVA: 0x00005178 File Offset: 0x00003378
 		public bool ChangesMade
 		{
 			get
@@ -31,7 +32,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x0600007F RID: 127 RVA: 0x00005160 File Offset: 0x00003360
+		// Token: 0x0600007F RID: 127 RVA: 0x00005180 File Offset: 0x00003380
 		public StringDialog(StringFile stringFile, bool selectMode, RufiniString initialSelection)
 		{
 			this.stringFile = stringFile;
@@ -40,13 +41,13 @@ namespace Rufilities.Strings.Dialogs
 			this.InitializeComponent();
 		}
 
-		// Token: 0x06000080 RID: 128 RVA: 0x00005183 File Offset: 0x00003383
+		// Token: 0x06000080 RID: 128 RVA: 0x000051A3 File Offset: 0x000033A3
 		private void MadeChanges()
 		{
 			this.madeChanges = true;
 		}
 
-		// Token: 0x06000081 RID: 129 RVA: 0x0000518C File Offset: 0x0000338C
+		// Token: 0x06000081 RID: 129 RVA: 0x000051AC File Offset: 0x000033AC
 		private void InsertStringInString(string insert)
 		{
 			int selectionStart = this.tbString.SelectionStart;
@@ -55,21 +56,21 @@ namespace Rufilities.Strings.Dialogs
 			this.tbString.SelectionLength = insert.Length;
 		}
 
-		// Token: 0x06000082 RID: 130 RVA: 0x00005204 File Offset: 0x00003404
+		// Token: 0x06000082 RID: 130 RVA: 0x00005224 File Offset: 0x00003424
 		private void PopulateInsertMenu()
 		{
 			string[] psi_LEVELS = Constants.GREEK_CHARACTERS;
 			for (int i = 0; i < psi_LEVELS.Length; i++)
 			{
 				string s = psi_LEVELS[i];
-				this.tsmLetters.DropDownItems.Add(s, null, delegate (object sender, EventArgs e)
+				this.tsmLetters.DropDownItems.Add(s, null, delegate(object sender, EventArgs e)
 				{
 					this.InsertStringInString(s);
 				});
 			}
 		}
 
-		// Token: 0x06000083 RID: 131 RVA: 0x00005260 File Offset: 0x00003460
+		// Token: 0x06000083 RID: 131 RVA: 0x00005280 File Offset: 0x00003480
 		private void PopulateSubTree(TreeNode parentTreeNode, StringNode node)
 		{
 			int num = node.IsContainer ? 0 : 2;
@@ -90,7 +91,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x06000084 RID: 132 RVA: 0x0000530C File Offset: 0x0000350C
+		// Token: 0x06000084 RID: 132 RVA: 0x0000532C File Offset: 0x0000352C
 		private void PopulateTreeView()
 		{
 			TreeNode treeNode = null;
@@ -123,7 +124,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x06000085 RID: 133 RVA: 0x000053FC File Offset: 0x000035FC
+		// Token: 0x06000085 RID: 133 RVA: 0x0000541C File Offset: 0x0000361C
 		private void StringDialog_Load(object sender, EventArgs e)
 		{
 			if (!this.selectMode)
@@ -153,7 +154,7 @@ namespace Rufilities.Strings.Dialogs
 			base.Close();
 		}
 
-		// Token: 0x06000088 RID: 136 RVA: 0x00005438 File Offset: 0x00003638
+		// Token: 0x06000088 RID: 136 RVA: 0x00005458 File Offset: 0x00003658
 		private void AddFolder(string qualifiedName)
 		{
 			if (this.tvStrings.GetNodeByFullPath(qualifiedName) == null)
@@ -190,7 +191,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x06000089 RID: 137 RVA: 0x00005518 File Offset: 0x00003718
+		// Token: 0x06000089 RID: 137 RVA: 0x00005538 File Offset: 0x00003738
 		private void RemoveNode(string qualifiedName)
 		{
 			TreeNode nodeByFullPath = this.tvStrings.GetNodeByFullPath(qualifiedName);
@@ -201,7 +202,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x0600008A RID: 138 RVA: 0x0000555C File Offset: 0x0000375C
+		// Token: 0x0600008A RID: 138 RVA: 0x0000557C File Offset: 0x0000377C
 		private void AddString(string qualifiedName)
 		{
 			if (this.tvStrings.GetNodeByFullPath(qualifiedName) == null)
@@ -236,7 +237,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x0600008B RID: 139 RVA: 0x00005634 File Offset: 0x00003834
+		// Token: 0x0600008B RID: 139 RVA: 0x00005654 File Offset: 0x00003854
 		private void UpdateString(string qualifiedName, string[] lines)
 		{
 			string text = string.Join("\n", lines);
@@ -248,14 +249,14 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x0600008C RID: 140 RVA: 0x0000567F File Offset: 0x0000387F
+		// Token: 0x0600008C RID: 140 RVA: 0x0000569F File Offset: 0x0000389F
 		private void RenameNode(string oldQualifiedName, string newQualifiedName)
 		{
 			this.stringFile.Move(oldQualifiedName, newQualifiedName);
 			this.MadeChanges();
 		}
 
-		// Token: 0x0600008D RID: 141 RVA: 0x00005698 File Offset: 0x00003898
+		// Token: 0x0600008D RID: 141 RVA: 0x000056B8 File Offset: 0x000038B8
 		private void bAddFolder_Click(object sender, EventArgs e)
 		{
 			TreeNode selectedNode = this.tvStrings.SelectedNode;
@@ -268,7 +269,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x0600008E RID: 142 RVA: 0x0000570C File Offset: 0x0000390C
+		// Token: 0x0600008E RID: 142 RVA: 0x0000572C File Offset: 0x0000392C
 		private void bRemoveFolder_Click(object sender, EventArgs e)
 		{
 			if (this.tvStrings.SelectedNode != null)
@@ -282,7 +283,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x0600008F RID: 143 RVA: 0x00005764 File Offset: 0x00003964
+		// Token: 0x0600008F RID: 143 RVA: 0x00005784 File Offset: 0x00003984
 		private void bAddString_Click(object sender, EventArgs e)
 		{
 			TreeNode selectedNode = this.tvStrings.SelectedNode;
@@ -294,7 +295,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x06000090 RID: 144 RVA: 0x000057CC File Offset: 0x000039CC
+		// Token: 0x06000090 RID: 144 RVA: 0x000057EC File Offset: 0x000039EC
 		private void bRemoveString_Click(object sender, EventArgs e)
 		{
 			string fullPath = this.tvStrings.SelectedNode.FullPath;
@@ -305,7 +306,7 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x06000091 RID: 145 RVA: 0x00005820 File Offset: 0x00003A20
+		// Token: 0x06000091 RID: 145 RVA: 0x00005840 File Offset: 0x00003A40
 		private void UpdateCurrentString()
 		{
 			TreeNode selectedNode = this.tvStrings.SelectedNode;
@@ -319,13 +320,13 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x06000092 RID: 146 RVA: 0x00005867 File Offset: 0x00003A67
+		// Token: 0x06000092 RID: 146 RVA: 0x00005887 File Offset: 0x00003A87
 		private void tvStrings_BeforeSelect(object sender, TreeViewCancelEventArgs e)
 		{
 			this.UpdateCurrentString();
 		}
 
-		// Token: 0x06000093 RID: 147 RVA: 0x00005870 File Offset: 0x00003A70
+		// Token: 0x06000093 RID: 147 RVA: 0x00005890 File Offset: 0x00003A90
 		private void tvStrings_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			TreeNode node = e.Node;
@@ -381,7 +382,7 @@ namespace Rufilities.Strings.Dialogs
 			this.tbString.Clear();
 		}
 
-		// Token: 0x06000094 RID: 148 RVA: 0x00005A2C File Offset: 0x00003C2C
+		// Token: 0x06000094 RID: 148 RVA: 0x00005A4C File Offset: 0x00003C4C
 		private void tvStrings_DragDrop(object sender, DragEventArgs e)
 		{
 			if (this.tvStrings.LastDragPath != null && this.tvStrings.LastDropPath != null)
@@ -393,13 +394,13 @@ namespace Rufilities.Strings.Dialogs
 			}
 		}
 
-		// Token: 0x06000095 RID: 149 RVA: 0x00005867 File Offset: 0x00003A67
+		// Token: 0x06000095 RID: 149 RVA: 0x00005887 File Offset: 0x00003A87
 		private void StringDialog_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			this.UpdateCurrentString();
 		}
 
-		// Token: 0x06000096 RID: 150 RVA: 0x00005A8F File Offset: 0x00003C8F
+		// Token: 0x06000096 RID: 150 RVA: 0x00005AAF File Offset: 0x00003CAF
 		private void bSave_Click(object sender, EventArgs e)
 		{
 			this.UpdateCurrentString();
@@ -407,7 +408,7 @@ namespace Rufilities.Strings.Dialogs
 			this.madeChanges = false;
 		}
 
-		// Token: 0x06000097 RID: 151 RVA: 0x00005AA9 File Offset: 0x00003CA9
+		// Token: 0x06000097 RID: 151 RVA: 0x00005AC9 File Offset: 0x00003CC9
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && this.components != null)
@@ -417,278 +418,212 @@ namespace Rufilities.Strings.Dialogs
 			base.Dispose(disposing);
 		}
 
-		// Token: 0x06000098 RID: 152 RVA: 0x00005AC8 File Offset: 0x00003CC8
+		// Token: 0x06000098 RID: 152 RVA: 0x00005AE8 File Offset: 0x00003CE8
 		private void InitializeComponent()
 		{
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StringDialog));
-            this.tsStrings = new System.Windows.Forms.ToolStrip();
-            this.bSave = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.bAddFolder = new System.Windows.Forms.ToolStripButton();
-            this.bRemoveFolder = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.bAddString = new System.Windows.Forms.ToolStripButton();
-            this.bRemoveString = new System.Windows.Forms.ToolStripButton();
-            this.bSelect = new System.Windows.Forms.ToolStripButton();
-            this.bCancel = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.bInsert = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tsmControls = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmNames = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmStats = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmLetters = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmValues = new System.Windows.Forms.ToolStripMenuItem();
-            this.moneyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mainSplit = new System.Windows.Forms.SplitContainer();
-            this.tvStrings = new Rufilities.Utility.Controls.DraggableTreeView();
-            this.ilTree = new System.Windows.Forms.ImageList(this.components);
-            this.tbString = new System.Windows.Forms.TextBox();
-            this.tsStrings.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.mainSplit)).BeginInit();
-            this.mainSplit.Panel1.SuspendLayout();
-            this.mainSplit.Panel2.SuspendLayout();
-            this.mainSplit.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // tsStrings
-            // 
-            this.tsStrings.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bSave,
-            this.toolStripSeparator3,
-            this.bAddFolder,
-            this.bRemoveFolder,
-            this.toolStripSeparator2,
-            this.bAddString,
-            this.bRemoveString,
-            this.bSelect,
-            this.bCancel,
-            this.toolStripSeparator1,
-            this.bInsert});
-            this.tsStrings.Location = new System.Drawing.Point(0, 0);
-            this.tsStrings.Name = "tsStrings";
-            this.tsStrings.Size = new System.Drawing.Size(832, 25);
-            this.tsStrings.TabIndex = 0;
-            this.tsStrings.Text = "String Tools";
-            // 
-            // bSave
-            // 
-            this.bSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bSave.Image = global::Rufilities.Properties.Resources.bSave_Image;
-            this.bSave.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bSave.Name = "bSave";
-            this.bSave.Size = new System.Drawing.Size(23, 22);
-            this.bSave.Text = "Save Strings";
-            this.bSave.Click += new System.EventHandler(this.bSave_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
-            // bAddFolder
-            // 
-            this.bAddFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bAddFolder.Image = global::Rufilities.Properties.Resources.bAddFolder_Image;
-            this.bAddFolder.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bAddFolder.Name = "bAddFolder";
-            this.bAddFolder.Size = new System.Drawing.Size(23, 22);
-            this.bAddFolder.Text = "Add Folder";
-            // 
-            // bRemoveFolder
-            // 
-            this.bRemoveFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bRemoveFolder.Enabled = false;
-            this.bRemoveFolder.Image = global::Rufilities.Properties.Resources.bRemoveFolder_Image;
-            this.bRemoveFolder.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bRemoveFolder.Name = "bRemoveFolder";
-            this.bRemoveFolder.Size = new System.Drawing.Size(23, 22);
-            this.bRemoveFolder.Text = "Delete Folder";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // bAddString
-            // 
-            this.bAddString.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bAddString.Image = global::Rufilities.Properties.Resources.bAddString_Image;
-            this.bAddString.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bAddString.Name = "bAddString";
-            this.bAddString.Size = new System.Drawing.Size(23, 22);
-            this.bAddString.Text = "Add String";
-            this.bAddString.Click += new System.EventHandler(this.bAddString_Click_1);
-            // 
-            // bRemoveString
-            // 
-            this.bRemoveString.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bRemoveString.Enabled = false;
-            this.bRemoveString.Image = global::Rufilities.Properties.Resources.bRemoveString_Image;
-            this.bRemoveString.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bRemoveString.Name = "bRemoveString";
-            this.bRemoveString.Size = new System.Drawing.Size(23, 22);
-            this.bRemoveString.Text = "Delete String";
-            // 
-            // bSelect
-            // 
-            this.bSelect.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.bSelect.Enabled = false;
-            this.bSelect.Image = global::Rufilities.Properties.Resources.bSelect_Image;
-            this.bSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bSelect.Name = "bSelect";
-            this.bSelect.Size = new System.Drawing.Size(58, 22);
-            this.bSelect.Text = "Select";
-            // 
-            // bCancel
-            // 
-            this.bCancel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.bCancel.Enabled = false;
-            this.bCancel.Image = global::Rufilities.Properties.Resources.bCancel_Image;
-            this.bCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bCancel.Name = "bCancel";
-            this.bCancel.Size = new System.Drawing.Size(63, 22);
-            this.bCancel.Text = "Cancel";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // bInsert
-            // 
-            this.bInsert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmControls,
-            this.tsmNames,
-            this.tsmStats,
-            this.tsmLetters,
-            this.tsmValues});
-            this.bInsert.Enabled = false;
-            this.bInsert.Image = global::Rufilities.Properties.Resources.bInsert_Image;
-            this.bInsert.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bInsert.Name = "bInsert";
-            this.bInsert.Size = new System.Drawing.Size(65, 22);
-            this.bInsert.Text = "Insert";
-            // 
-            // tsmControls
-            // 
-            this.tsmControls.Name = "tsmControls";
-            this.tsmControls.Size = new System.Drawing.Size(165, 22);
-            this.tsmControls.Text = "Controls";
-            // 
-            // tsmNames
-            // 
-            this.tsmNames.Name = "tsmNames";
-            this.tsmNames.Size = new System.Drawing.Size(165, 22);
-            this.tsmNames.Text = "Character Names";
-            // 
-            // tsmStats
-            // 
-            this.tsmStats.Name = "tsmStats";
-            this.tsmStats.Size = new System.Drawing.Size(165, 22);
-            this.tsmStats.Text = "Character Stats";
-            // 
-            // tsmLetters
-            // 
-            this.tsmLetters.Name = "tsmLetters";
-            this.tsmLetters.Size = new System.Drawing.Size(165, 22);
-            this.tsmLetters.Text = "PSI Levels";
-            // 
-            // tsmValues
-            // 
-            this.tsmValues.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.moneyToolStripMenuItem});
-            this.tsmValues.Name = "tsmValues";
-            this.tsmValues.Size = new System.Drawing.Size(165, 22);
-            this.tsmValues.Text = "Values";
-            // 
-            // moneyToolStripMenuItem
-            // 
-            this.moneyToolStripMenuItem.Name = "moneyToolStripMenuItem";
-            this.moneyToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
-            this.moneyToolStripMenuItem.Text = "Money";
-            // 
-            // mainSplit
-            // 
-            this.mainSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainSplit.Location = new System.Drawing.Point(0, 25);
-            this.mainSplit.Margin = new System.Windows.Forms.Padding(4);
-            this.mainSplit.Name = "mainSplit";
-            // 
-            // mainSplit.Panel1
-            // 
-            this.mainSplit.Panel1.Controls.Add(this.tvStrings);
-            // 
-            // mainSplit.Panel2
-            // 
-            this.mainSplit.Panel2.Controls.Add(this.tbString);
-            this.mainSplit.Size = new System.Drawing.Size(832, 419);
-            this.mainSplit.SplitterDistance = 276;
-            this.mainSplit.SplitterWidth = 5;
-            this.mainSplit.TabIndex = 1;
-            // 
-            // tvStrings
-            // 
-            this.tvStrings.AllowDrop = true;
-            this.tvStrings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tvStrings.DragThreshold = 30;
-            this.tvStrings.HideSelection = false;
-            this.tvStrings.ImageIndex = 0;
-            this.tvStrings.ImageList = this.ilTree;
-            this.tvStrings.Location = new System.Drawing.Point(0, 0);
-            this.tvStrings.Margin = new System.Windows.Forms.Padding(4);
-            this.tvStrings.Name = "tvStrings";
-            this.tvStrings.PathSeparator = ".";
-            this.tvStrings.SelectedImageIndex = 0;
-            this.tvStrings.Size = new System.Drawing.Size(276, 419);
-            this.tvStrings.Sorted = true;
-            this.tvStrings.TabIndex = 0;
-            // 
-            // ilTree
-            // 
-            this.ilTree.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilTree.ImageStream")));
-            this.ilTree.TransparentColor = System.Drawing.Color.Transparent;
-            this.ilTree.Images.SetKeyName(0, "folderClosed");
-            this.ilTree.Images.SetKeyName(1, "folderOpen");
-            this.ilTree.Images.SetKeyName(2, "text");
-            // 
-            // tbString
-            // 
-            this.tbString.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbString.Enabled = false;
-            this.tbString.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbString.Location = new System.Drawing.Point(0, 0);
-            this.tbString.Margin = new System.Windows.Forms.Padding(4);
-            this.tbString.Multiline = true;
-            this.tbString.Name = "tbString";
-            this.tbString.Size = new System.Drawing.Size(551, 419);
-            this.tbString.TabIndex = 0;
-            // 
-            // StringDialog
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(832, 444);
-            this.Controls.Add(this.mainSplit);
-            this.Controls.Add(this.tsStrings);
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(661, 385);
-            this.Name = "StringDialog";
-            this.ShowIcon = false;
-            this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Strings";
-            this.tsStrings.ResumeLayout(false);
-            this.tsStrings.PerformLayout();
-            this.mainSplit.Panel1.ResumeLayout(false);
-            this.mainSplit.Panel2.ResumeLayout(false);
-            this.mainSplit.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.mainSplit)).EndInit();
-            this.mainSplit.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+			this.components = new Container();
+			this.tsStrings = new ToolStrip();
+			this.bSave = new ToolStripButton();
+			this.toolStripSeparator3 = new ToolStripSeparator();
+			this.bAddFolder = new ToolStripButton();
+			this.bRemoveFolder = new ToolStripButton();
+			this.toolStripSeparator2 = new ToolStripSeparator();
+			this.bAddString = new ToolStripButton();
+			this.bRemoveString = new ToolStripButton();
+			this.bSelect = new ToolStripButton();
+			this.bCancel = new ToolStripButton();
+			this.toolStripSeparator1 = new ToolStripSeparator();
+			this.bInsert = new ToolStripDropDownButton();
+			this.tsmControls = new ToolStripMenuItem();
+			this.tsmNames = new ToolStripMenuItem();
+			this.tsmStats = new ToolStripMenuItem();
+			this.tsmLetters = new ToolStripMenuItem();
+			this.tsmValues = new ToolStripMenuItem();
+			this.moneyToolStripMenuItem = new ToolStripMenuItem();
+			this.mainSplit = new SplitContainer();
+			this.ilTree = new ImageList(this.components);
+			this.tbString = new TextBox();
+			this.tvStrings = new DraggableTreeView();
+			this.tsStrings.SuspendLayout();
+			this.mainSplit.BeginInit();
+			this.mainSplit.Panel1.SuspendLayout();
+			this.mainSplit.Panel2.SuspendLayout();
+			this.mainSplit.SuspendLayout();
+			base.SuspendLayout();
+			this.tsStrings.Items.AddRange(new ToolStripItem[]
+			{
+				this.bSave,
+				this.toolStripSeparator3,
+				this.bAddFolder,
+				this.bRemoveFolder,
+				this.toolStripSeparator2,
+				this.bAddString,
+				this.bRemoveString,
+				this.bSelect,
+				this.bCancel,
+				this.toolStripSeparator1,
+				this.bInsert
+			});
+			this.tsStrings.Location = new Point(0, 0);
+			this.tsStrings.Name = "tsStrings";
+			this.tsStrings.Size = new Size(624, 25);
+			this.tsStrings.TabIndex = 0;
+			this.tsStrings.Text = "String Tools";
+			this.bSave.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.bSave.Image = Resources.bSave_Image;
+			this.bSave.ImageTransparentColor = Color.Magenta;
+			this.bSave.Name = "bSave";
+			this.bSave.Size = new Size(23, 22);
+			this.bSave.Text = "Save Strings";
+			this.bSave.Click += this.bSave_Click;
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new Size(6, 25);
+			this.bAddFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.bAddFolder.Image = Resources.bAddFolder_Image;
+			this.bAddFolder.ImageTransparentColor = Color.Magenta;
+			this.bAddFolder.Name = "bAddFolder";
+			this.bAddFolder.Size = new Size(23, 22);
+			this.bAddFolder.Text = "Add Folder";
+			this.bAddFolder.Click += this.bAddFolder_Click;
+			this.bRemoveFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.bRemoveFolder.Enabled = false;
+			this.bRemoveFolder.Image = Resources.bRemoveFolder_Image;
+			this.bRemoveFolder.ImageTransparentColor = Color.Magenta;
+			this.bRemoveFolder.Name = "bRemoveFolder";
+			this.bRemoveFolder.Size = new Size(23, 22);
+			this.bRemoveFolder.Text = "Delete Folder";
+			this.bRemoveFolder.Click += this.bRemoveFolder_Click;
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new Size(6, 25);
+			this.bAddString.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.bAddString.Image = Resources.bAddString_Image;
+			this.bAddString.ImageTransparentColor = Color.Magenta;
+			this.bAddString.Name = "bAddString";
+			this.bAddString.Size = new Size(23, 22);
+			this.bAddString.Text = "Add String";
+			this.bAddString.Click += this.bAddString_Click;
+			this.bRemoveString.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.bRemoveString.Enabled = false;
+			this.bRemoveString.Image = Resources.bRemoveString_Image;
+			this.bRemoveString.ImageTransparentColor = Color.Magenta;
+			this.bRemoveString.Name = "bRemoveString";
+			this.bRemoveString.Size = new Size(23, 22);
+			this.bRemoveString.Text = "Delete String";
+			this.bRemoveString.Click += this.bRemoveString_Click;
+			this.bSelect.Alignment = ToolStripItemAlignment.Right;
+			this.bSelect.Enabled = false;
+			this.bSelect.Image = Resources.bSelect_Image;
+			this.bSelect.ImageTransparentColor = Color.Magenta;
+			this.bSelect.Name = "bSelect";
+			this.bSelect.Size = new Size(58, 22);
+			this.bSelect.Text = "Select";
+			this.bSelect.Click += this.bSelect_Click;
+			this.bCancel.Alignment = ToolStripItemAlignment.Right;
+			this.bCancel.Enabled = false;
+			this.bCancel.Image = Resources.bCancel_Image;
+			this.bCancel.ImageTransparentColor = Color.Magenta;
+			this.bCancel.Name = "bCancel";
+			this.bCancel.Size = new Size(63, 22);
+			this.bCancel.Text = "Cancel";
+			this.bCancel.Click += this.bCancel_Click;
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new Size(6, 25);
+			this.bInsert.DropDownItems.AddRange(new ToolStripItem[]
+			{
+				this.tsmControls,
+				this.tsmNames,
+				this.tsmStats,
+				this.tsmLetters,
+				this.tsmValues
+			});
+			this.bInsert.Enabled = false;
+			this.bInsert.Image = Resources.bInsert_Image;
+			this.bInsert.ImageTransparentColor = Color.Magenta;
+			this.bInsert.Name = "bInsert";
+			this.bInsert.Size = new Size(65, 22);
+			this.bInsert.Text = "Insert";
+			this.tsmControls.Name = "tsmControls";
+			this.tsmControls.Size = new Size(165, 22);
+			this.tsmControls.Text = "Controls";
+			this.tsmNames.Name = "tsmNames";
+			this.tsmNames.Size = new Size(165, 22);
+			this.tsmNames.Text = "Character Names";
+			this.tsmStats.Name = "tsmStats";
+			this.tsmStats.Size = new Size(165, 22);
+			this.tsmStats.Text = "Character Stats";
+			this.tsmLetters.Name = "tsmLetters";
+			this.tsmLetters.Size = new Size(165, 22);
+			this.tsmLetters.Text = "PSI Levels";
+			this.tsmValues.DropDownItems.AddRange(new ToolStripItem[]
+			{
+				this.moneyToolStripMenuItem
+			});
+			this.tsmValues.Name = "tsmValues";
+			this.tsmValues.Size = new Size(165, 22);
+			this.tsmValues.Text = "Values";
+			this.moneyToolStripMenuItem.Name = "moneyToolStripMenuItem";
+			this.moneyToolStripMenuItem.Size = new Size(111, 22);
+			this.moneyToolStripMenuItem.Text = "Money";
+			this.mainSplit.Dock = DockStyle.Fill;
+			this.mainSplit.Location = new Point(0, 25);
+			this.mainSplit.Name = "mainSplit";
+			this.mainSplit.Panel1.Controls.Add(this.tvStrings);
+			this.mainSplit.Panel2.Controls.Add(this.tbString);
+			this.mainSplit.Size = new Size(624, 336);
+			this.mainSplit.SplitterDistance = 207;
+			this.mainSplit.TabIndex = 1;
+			this.ilTree.ImageStream = Resources.ilTree_ImageStream;
+			this.ilTree.TransparentColor = Color.Transparent;
+			this.ilTree.Images.SetKeyName(0, "folderClosed");
+			this.ilTree.Images.SetKeyName(1, "folderOpen");
+			this.ilTree.Images.SetKeyName(2, "text");
+			this.tbString.Dock = DockStyle.Fill;
+			this.tbString.Enabled = false;
+			this.tbString.Font = new Font("Lucida Console", 9.75f, FontStyle.Regular, GraphicsUnit.Point, 0);
+			this.tbString.Location = new Point(0, 0);
+			this.tbString.Multiline = true;
+			this.tbString.Name = "tbString";
+			this.tbString.Size = new Size(413, 336);
+			this.tbString.TabIndex = 0;
+			this.tvStrings.AllowDrop = true;
+			this.tvStrings.Dock = DockStyle.Fill;
+			this.tvStrings.DragThreshold = 30;
+			this.tvStrings.HideSelection = false;
+			this.tvStrings.ImageIndex = 0;
+			this.tvStrings.ImageList = this.ilTree;
+			this.tvStrings.Location = new Point(0, 0);
+			this.tvStrings.Name = "tvStrings";
+			this.tvStrings.PathSeparator = ".";
+			this.tvStrings.SelectedImageIndex = 0;
+			this.tvStrings.Size = new Size(207, 336);
+			this.tvStrings.Sorted = true;
+			this.tvStrings.TabIndex = 0;
+			this.tvStrings.BeforeSelect += this.tvStrings_BeforeSelect;
+			this.tvStrings.AfterSelect += this.tvStrings_AfterSelect;
+			this.tvStrings.DragDrop += this.tvStrings_DragDrop;
+			base.AutoScaleDimensions = new SizeF(6f, 13f);
+			base.AutoScaleMode = AutoScaleMode.Font;
+			base.ClientSize = new Size(624, 361);
+			base.Controls.Add(this.mainSplit);
+			base.Controls.Add(this.tsStrings);
+			base.MinimizeBox = false;
+			this.MinimumSize = new Size(500, 320);
+			base.Name = "StringDialog";
+			base.ShowIcon = false;
+			base.ShowInTaskbar = false;
+			base.StartPosition = FormStartPosition.CenterParent;
+			this.Text = "Strings";
+			base.FormClosing += this.StringDialog_FormClosing;
+			base.Load += this.StringDialog_Load;
+			this.tsStrings.ResumeLayout(false);
+			this.tsStrings.PerformLayout();
+			this.mainSplit.Panel1.ResumeLayout(false);
+			this.mainSplit.Panel2.ResumeLayout(false);
+			this.mainSplit.Panel2.PerformLayout();
+			this.mainSplit.EndInit();
+			this.mainSplit.ResumeLayout(false);
+			base.ResumeLayout(false);
+			base.PerformLayout();
 		}
 
 		// Token: 0x0400004D RID: 77
@@ -774,10 +709,5 @@ namespace Rufilities.Strings.Dialogs
 
 		// Token: 0x04000068 RID: 104
 		private ToolStripSeparator toolStripSeparator3;
-
-        private void bAddString_Click_1(object sender, EventArgs e)
-        {
-
-        }
-    }
+	}
 }
