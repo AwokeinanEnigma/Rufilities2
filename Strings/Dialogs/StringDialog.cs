@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -63,7 +64,7 @@ namespace Rufilities.Strings.Dialogs
 			for (int i = 0; i < psi_LEVELS.Length; i++)
 			{
 				string s = psi_LEVELS[i];
-				this.tsmLetters.DropDownItems.Add(s, null, delegate(object sender, EventArgs e)
+				this.tsmLetters.DropDownItems.Add(s, null, delegate (object sender, EventArgs e)
 				{
 					this.InsertStringInString(s);
 				});
