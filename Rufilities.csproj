@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\Thomas\Documents\Mother4Restored\Mother4\bin\Debug\Mother4Util.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1254CA8D-B79A-40F6-A741-DB89365B4175}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Rufilities</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <ApplicationVersion>0.1.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>Rufilities</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="fNbt">
+      <HintPath>lib\fNbt.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\Resources.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Strings\RufiniString.cs" />
+    <Compile Include="Strings\StringFile.cs" />
+    <Compile Include="Strings\StringNode.cs" />
+    <Compile Include="Strings\Dialogs\StringDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Strings\Utility\StringSanitizer.cs" />
+    <Compile Include="Utility\Constants.cs" />
+    <Compile Include="Utility\DragHelper.cs" />
+    <Compile Include="Utility\LabelValuePair.cs" />
+    <Compile Include="Utility\Controls\DraggableTreeNode.cs" />
+    <Compile Include="Utility\Controls\DraggableTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utility\Controls\ListBuilder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Utility\Dialogs\ColorEditDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Utility\Dialogs\InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Strings\Dialogs\StringDialog.resx">
+      <DependentUpon>StringDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Utility\Dialogs\InputDialog.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\addButton.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bAddFolder.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bAddString.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bCancel.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bInsert.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bRemoveAction.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bRemoveFolder.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bRemoveString.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bSave.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bSelect.Image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\newPreviewBox.BackgroundImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\origPreviewBox.BackgroundImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\removeButton.Image.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
