@@ -518,6 +518,7 @@ namespace Rufilities.Strings.Dialogs
             this.bAddString.Name = "bAddString";
             this.bAddString.Size = new System.Drawing.Size(23, 22);
             this.bAddString.Text = "Add String";
+            this.bAddString.Click += new System.EventHandler(this.bAddString_Click_1);
             // 
             // bRemoveString
             // 
@@ -611,7 +612,7 @@ namespace Rufilities.Strings.Dialogs
             // 
             this.mainSplit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainSplit.Location = new System.Drawing.Point(0, 25);
-            this.mainSplit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.mainSplit.Margin = new System.Windows.Forms.Padding(4);
             this.mainSplit.Name = "mainSplit";
             // 
             // mainSplit.Panel1
@@ -635,7 +636,7 @@ namespace Rufilities.Strings.Dialogs
             this.tvStrings.ImageIndex = 0;
             this.tvStrings.ImageList = this.ilTree;
             this.tvStrings.Location = new System.Drawing.Point(0, 0);
-            this.tvStrings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tvStrings.Margin = new System.Windows.Forms.Padding(4);
             this.tvStrings.Name = "tvStrings";
             this.tvStrings.PathSeparator = ".";
             this.tvStrings.SelectedImageIndex = 0;
@@ -657,7 +658,7 @@ namespace Rufilities.Strings.Dialogs
             this.tbString.Enabled = false;
             this.tbString.Font = new System.Drawing.Font("Lucida Console", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbString.Location = new System.Drawing.Point(0, 0);
-            this.tbString.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbString.Margin = new System.Windows.Forms.Padding(4);
             this.tbString.Multiline = true;
             this.tbString.Name = "tbString";
             this.tbString.Size = new System.Drawing.Size(551, 419);
@@ -670,7 +671,7 @@ namespace Rufilities.Strings.Dialogs
             this.ClientSize = new System.Drawing.Size(832, 444);
             this.Controls.Add(this.mainSplit);
             this.Controls.Add(this.tsStrings);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(661, 385);
             this.Name = "StringDialog";
@@ -773,5 +774,10 @@ namespace Rufilities.Strings.Dialogs
 
 		// Token: 0x04000068 RID: 104
 		private ToolStripSeparator toolStripSeparator3;
+
+        private void bAddString_Click_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
