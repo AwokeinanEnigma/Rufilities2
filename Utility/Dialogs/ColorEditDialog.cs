@@ -390,7 +390,7 @@ namespace Rufilities.Utility.Dialogs
       this.FormBorderStyle = FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.Name = nameof (ColorEditDialog);
+      this.Name = "ColorEditDialog";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = FormStartPosition.CenterParent;

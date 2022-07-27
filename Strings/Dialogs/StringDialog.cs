@@ -144,6 +144,9 @@ namespace Rufilities.Strings.Dialogs
 		private void bSelect_Click(object sender, EventArgs e)
 		{
 			base.DialogResult = DialogResult.OK;
+			this.UpdateCurrentString();
+			this.stringFile.Save();
+			this.madeChanges = false;
 			base.Close();
 		}
 

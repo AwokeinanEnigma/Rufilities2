@@ -27,7 +27,7 @@ namespace Rufilities.Strings
 		private void InitializePaths(string languageCode)
 		{
 			this.stringsFilename = languageCode + ".dat";
-			this.stringsPath = Path.Combine("Resources", "Text", "en_US", this.stringsFilename);
+			this.stringsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Godot\\app_userdata\\Land Under Wave\\"+ this.stringsFilename;
 		}
 
 		// Token: 0x0600005C RID: 92 RVA: 0x00004908 File Offset: 0x00002B08

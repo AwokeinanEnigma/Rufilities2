@@ -82,9 +82,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Strings\Dialogs\StringDialog.resx">
-      <DependentUpon>StringDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Utility\Dialogs\InputDialog.resx" />
   </ItemGroup>
   <ItemGroup>
