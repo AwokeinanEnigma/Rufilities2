@@ -6,66 +6,60 @@ using fNbt;
 
 namespace Rufilities.Strings
 {
-	// Token: 0x0200000B RID: 11
 	public class StringFile
 	{
-		// Token: 0x06000059 RID: 89 RVA: 0x000048A5 File Offset: 0x00002AA5
 		public StringFile()
 		{
 			this.InitializePaths("en_US");
 			this.Reload();
 		}
 
-		// Token: 0x0600005A RID: 90 RVA: 0x000048BE File Offset: 0x00002ABE
 		public StringFile(string languageCode)
 		{
 			this.InitializePaths(languageCode);
 			this.Reload();
 		}
 
-		// Token: 0x0600005B RID: 91 RVA: 0x000048D3 File Offset: 0x00002AD3
 		private void InitializePaths(string languageCode)
 		{
 			this.stringsFilename = languageCode + ".dat";
-			this.stringsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Godot\\app_userdata\\Land Under Wave\\"+ this.stringsFilename;
+			this.stringsPath = Path.Combine("Data", "Text", "en_US", this.stringsFilename);
 		}
 
-		// Token: 0x0600005C RID: 92 RVA: 0x00004908 File Offset: 0x00002B08
 		private void AddMetaTags()
 		{
-			if (this.file.RootTag.Contains("_meta"))
+			if (!this.file.RootTag.Contains("_meta"))
 			{
-				return;
-			}
-			NbtCompound newTag = new NbtCompound("_meta");
-			this.file.RootTag.Add(newTag);
-			foreach (KeyValuePair<string, string> metaTag in StringFile.metaTags)
-			{
-				NbtString newTag2 = new NbtString(metaTag.Key, metaTag.Value);
-				newTag.Add(newTag2);
+				NbtCompound nbtCompound = new NbtCompound("_meta");
+				this.file.RootTag.Add(nbtCompound);
+				foreach (KeyValuePair<string, string> keyValuePair in StringFile.metaTags)
+				{
+					NbtString newTag = new NbtString(keyValuePair.Key, keyValuePair.Value);
+					nbtCompound.Add(newTag);
+				}
 			}
 		}
 
-		// Token: 0x0600005D RID: 93 RVA: 0x000049A4 File Offset: 0x00002BA4
 		public void Reload()
 		{
-			this.file = ((!File.Exists(this.stringsPath)) ? new NbtFile(new NbtCompound("strings")) : new NbtFile(this.stringsPath));
-			this.AddMetaTags();
-		}
-
-		// Token: 0x0600005E RID: 94 RVA: 0x000049DC File Offset: 0x00002BDC
-		private void FixPeriodNames(NbtTag tag)
-		{
-			if (!(tag is NbtCompound))
+			if (File.Exists(this.stringsPath))
 			{
-				if (!(tag is NbtString))
-				{
-					return;
-				}
+				this.file = new NbtFile(this.stringsPath);
 			}
 			else
 			{
-				using (IEnumerator<NbtTag> enumerator = ((IEnumerable<NbtTag>)new List<NbtTag>(((NbtCompound)tag).Tags)).GetEnumerator())
+				NbtCompound rootTag = new NbtCompound("strings");
+				this.file = new NbtFile(rootTag);
+			}
+			this.AddMetaTags();
+		}
+
+		private void FixPeriodNames(NbtTag tag)
+		{
+			if (tag is NbtCompound)
+			{
+				IEnumerable<NbtTag> enumerable = new List<NbtTag>(((NbtCompound)tag).Tags);
+				using (IEnumerator<NbtTag> enumerator = enumerable.GetEnumerator())
 				{
 					while (enumerator.MoveNext())
 					{
@@ -75,61 +69,58 @@ namespace Rufilities.Strings
 					return;
 				}
 			}
-			if (Enumerable.Contains<char>(tag.Name, '.'))
+			if (tag is NbtString && tag.Name.Contains('.'))
 			{
-				NbtCompound parent = (NbtCompound)tag.Parent;
-				parent.Remove(tag);
-				string[] strArray = tag.Name.Split(new char[]
+				NbtCompound nbtCompound = (NbtCompound)tag.Parent;
+				nbtCompound.Remove(tag);
+				string[] array = tag.Name.Split(new char[]
 				{
 					'.'
 				});
-				tag.Name = strArray[strArray.Length - 1];
-				NbtCompound nbtCompound = parent;
-				for (int index = 0; index < strArray.Length - 1; index++)
+				tag.Name = array[array.Length - 1];
+				NbtCompound nbtCompound2 = nbtCompound;
+				for (int i = 0; i < array.Length - 1; i++)
 				{
-					if (!nbtCompound.Contains(strArray[index]))
+					if (!nbtCompound2.Contains(array[i]))
 					{
-						NbtCompound newTag = new NbtCompound(strArray[index]);
-						nbtCompound.Add(newTag);
-						nbtCompound = newTag;
+						NbtCompound nbtCompound3 = new NbtCompound(array[i]);
+						nbtCompound2.Add(nbtCompound3);
+						nbtCompound2 = nbtCompound3;
 					}
 					else
 					{
-						nbtCompound = nbtCompound.Get<NbtCompound>(strArray[index]);
+						nbtCompound2 = nbtCompound2.Get<NbtCompound>(array[i]);
 					}
 				}
-				nbtCompound.Add(tag);
+				nbtCompound2.Add(tag);
 			}
 		}
 
-		// Token: 0x0600005F RID: 95 RVA: 0x00004ADC File Offset: 0x00002CDC
 		public void FixPeriodNames()
 		{
 			this.FixPeriodNames(this.file.RootTag);
 		}
 
-		// Token: 0x06000060 RID: 96 RVA: 0x00004AF0 File Offset: 0x00002CF0
 		public RufiniString Get(string[] nameParts)
 		{
-			string str = null;
-			NbtCompound result = this.file.RootTag;
-			for (int index = 0; index < nameParts.Length - 1; index++)
+			string value = null;
+			NbtCompound rootTag = this.file.RootTag;
+			for (int i = 0; i < nameParts.Length - 1; i++)
 			{
-				result.TryGet<NbtCompound>(nameParts[index], out result);
+				rootTag.TryGet<NbtCompound>(nameParts[i], out rootTag);
 			}
-			if (result != null)
+			if (rootTag != null)
 			{
-				NbtTag result2 = null;
-				result.TryGet(nameParts[nameParts.Length - 1], out result2);
-				if (result2 is NbtString)
+				NbtTag nbtTag = null;
+				rootTag.TryGet(nameParts[nameParts.Length - 1], out nbtTag);
+				if (nbtTag is NbtString)
 				{
-					str = result2.StringValue;
+					value = nbtTag.StringValue;
 				}
 			}
-			return new RufiniString(nameParts, str);
+			return new RufiniString(nameParts, value);
 		}
 
-		// Token: 0x06000061 RID: 97 RVA: 0x00004B52 File Offset: 0x00002D52
 		public RufiniString Get(string qualifiedName)
 		{
 			return this.Get(qualifiedName.Split(new char[]
@@ -138,43 +129,40 @@ namespace Rufilities.Strings
 			}));
 		}
 
-		// Token: 0x06000062 RID: 98 RVA: 0x00004B6C File Offset: 0x00002D6C
 		private NbtCompound GetFolder(string[] nameParts, int namePartCount, bool addMissingTags)
 		{
 			int num = Math.Max(0, Math.Min(nameParts.Length, namePartCount));
-			NbtCompound folder = this.file.RootTag;
-			for (int index = 0; index < num; index++)
+			NbtCompound nbtCompound = this.file.RootTag;
+			for (int i = 0; i < num; i++)
 			{
-				NbtCompound result = null;
-				folder.TryGet<NbtCompound>(nameParts[index], out result);
-				if (result == null)
+				NbtCompound nbtCompound2 = null;
+				nbtCompound.TryGet<NbtCompound>(nameParts[i], out nbtCompound2);
+				if (nbtCompound2 == null)
 				{
 					if (!addMissingTags)
 					{
-						folder = null;
+						nbtCompound = null;
 						break;
 					}
-					result = new NbtCompound(nameParts[index]);
-					folder.Add(result);
+					nbtCompound2 = new NbtCompound(nameParts[i]);
+					nbtCompound.Add(nbtCompound2);
 				}
-				folder = result;
+				nbtCompound = nbtCompound2;
 			}
-			return folder;
+			return nbtCompound;
 		}
 
-		// Token: 0x06000063 RID: 99 RVA: 0x00004BCE File Offset: 0x00002DCE
 		private NbtCompound GetFolder(string[] nameParts, bool addMissingTags)
 		{
 			return this.GetFolder(nameParts, nameParts.Length, addMissingTags);
 		}
 
-		// Token: 0x06000064 RID: 100 RVA: 0x00004BDB File Offset: 0x00002DDB
 		public bool PutFolder(string[] nameParts)
 		{
-			return this.GetFolder(nameParts, true) != null;
+			NbtCompound folder = this.GetFolder(nameParts, true);
+			return folder != null;
 		}
 
-		// Token: 0x06000065 RID: 101 RVA: 0x00004BE8 File Offset: 0x00002DE8
 		public bool PutFolder(string qualifiedName)
 		{
 			return this.PutFolder(qualifiedName.Split(new char[]
@@ -183,66 +171,63 @@ namespace Rufilities.Strings
 			}));
 		}
 
-		// Token: 0x06000066 RID: 102 RVA: 0x00004C04 File Offset: 0x00002E04
 		public bool Put(string[] nameParts, string value)
 		{
-			bool flag = false;
+			bool result = false;
 			NbtCompound folder = this.GetFolder(nameParts, nameParts.Length - 1, true);
 			if (folder != null)
 			{
-				bool flag2 = true;
-				string namePart = nameParts[nameParts.Length - 1];
-				NbtTag result = null;
-				if (folder.TryGet(namePart, out result))
+				bool flag = true;
+				string tagName = nameParts[nameParts.Length - 1];
+				NbtTag nbtTag = null;
+				if (folder.TryGet(tagName, out nbtTag))
 				{
-					if (result is NbtString)
+					if (nbtTag is NbtString)
 					{
-						folder.Remove(result);
+						folder.Remove(nbtTag);
 					}
 					else
 					{
-						flag2 = false;
+						flag = false;
 					}
 				}
-				if (flag2)
+				if (flag)
 				{
-					NbtTag newTag = new NbtString(namePart, value);
-					folder.Add(newTag);
-					flag = true;
+					nbtTag = new NbtString(tagName, value);
+					folder.Add(nbtTag);
+					result = true;
 				}
 			}
-			return flag;
+			return result;
 		}
 
-		// Token: 0x06000067 RID: 103 RVA: 0x00004C69 File Offset: 0x00002E69
 		public bool Put(string qualifiedName, string value)
 		{
-			return this.Put(qualifiedName.Split(new char[]
+			string[] nameParts = qualifiedName.Split(new char[]
 			{
 				'.'
-			}), value);
+			});
+			return this.Put(nameParts, value);
 		}
 
-		// Token: 0x06000068 RID: 104 RVA: 0x00004C84 File Offset: 0x00002E84
 		public bool Remove(string[] nameParts)
 		{
-			bool flag = false;
+			bool result = false;
 			NbtCompound rootTag = this.file.RootTag;
 			NbtCompound folder = this.GetFolder(nameParts, nameParts.Length - 1, false);
 			if (folder != null)
 			{
-				NbtTag result = null;
-				folder.TryGet(nameParts[nameParts.Length - 1], out result);
-				if (result != null)
+				NbtTag nbtTag = null;
+				folder.TryGet(nameParts[nameParts.Length - 1], out nbtTag);
+				if (nbtTag != null)
 				{
-					folder.Remove(result);
-					flag = true;
+					folder.Remove(nbtTag);
+					result = true;
 				}
 			}
-			return flag;
+			return result;
 		}
 
-		// Token: 0x06000069 RID: 105 RVA: 0x00004CD0 File Offset: 0x00002ED0
 		public bool Remove(string qualifiedName)
 		{
 			return this.Remove(qualifiedName.Split(new char[]
@@ -251,50 +236,46 @@ namespace Rufilities.Strings
 			}));
 		}
 
-		// Token: 0x0600006A RID: 106 RVA: 0x00004CEC File Offset: 0x00002EEC
 		private NbtTag GetTag(string[] nameParts, int namePartCount)
 		{
 			int num = Math.Max(0, Math.Min(nameParts.Length, namePartCount));
-			NbtTag tag = this.file.RootTag;
-			for (int index = 0; index < num; index++)
+			NbtTag nbtTag = this.file.RootTag;
+			for (int i = 0; i < num; i++)
 			{
-				NbtTag result = null;
-				if (!(tag is NbtCompound))
+				NbtTag nbtTag2 = null;
+				if (nbtTag is NbtCompound)
 				{
-					if (tag is NbtString)
+					NbtCompound nbtCompound = (NbtCompound)nbtTag;
+					nbtCompound.TryGet(nameParts[i], out nbtTag2);
+					if (nbtTag2 == null)
 					{
-						if (index < num - 1)
-						{
-							tag = null;
-							break;
-						}
+						nbtTag = null;
 						break;
 					}
+					nbtTag = nbtTag2;
 				}
-				else
+				else if (nbtTag is NbtString)
 				{
-					((NbtCompound)tag).TryGet(nameParts[index], out result);
-					if (result == null)
+					if (i < num - 1)
 					{
-						tag = null;
+						nbtTag = null;
 						break;
 					}
-					tag = result;
+					break;
 				}
 			}
-			return tag;
+			return nbtTag;
 		}
 
-		// Token: 0x0600006B RID: 107 RVA: 0x00004D5C File Offset: 0x00002F5C
 		private bool MoveTag(NbtTag oldTag, string[] oldNameParts, string[] newNameParts)
 		{
 			bool flag = false;
 			if (oldTag.Parent is NbtCompound)
 			{
 				((NbtCompound)oldTag.Parent).Remove(oldTag);
-				string[] strArray = new string[newNameParts.Length - 1];
-				Array.Copy(newNameParts, strArray, strArray.Length);
-				NbtCompound folder = this.GetFolder(strArray, false);
+				string[] array = new string[newNameParts.Length - 1];
+				Array.Copy(newNameParts, array, array.Length);
+				NbtCompound folder = this.GetFolder(array, false);
 				if (folder != null)
 				{
 					folder.Add(oldTag);
@@ -303,27 +284,28 @@ namespace Rufilities.Strings
 			}
 			if (oldTag is NbtCompound)
 			{
-				foreach (NbtTag oldTag2 in ((IEnumerable<NbtTag>)new List<NbtTag>(((NbtCompound)oldTag).Tags)))
+				NbtCompound nbtCompound = (NbtCompound)oldTag;
+				IEnumerable<NbtTag> enumerable = new List<NbtTag>(nbtCompound.Tags);
+				foreach (NbtTag nbtTag in enumerable)
 				{
-					string[] strArray2 = new string[oldNameParts.Length + 1];
-					Array.Copy(oldNameParts, strArray2, oldNameParts.Length);
-					strArray2[strArray2.Length - 1] = oldTag2.Name;
-					string[] strArray3 = new string[newNameParts.Length + 1];
-					Array.Copy(newNameParts, strArray3, newNameParts.Length);
-					strArray3[strArray3.Length - 1] = oldTag2.Name;
-					flag &= this.MoveTag(oldTag2, strArray2, strArray3);
+					string[] array2 = new string[oldNameParts.Length + 1];
+					Array.Copy(oldNameParts, array2, oldNameParts.Length);
+					array2[array2.Length - 1] = nbtTag.Name;
+					string[] array3 = new string[newNameParts.Length + 1];
+					Array.Copy(newNameParts, array3, newNameParts.Length);
+					array3[array3.Length - 1] = nbtTag.Name;
+					flag &= this.MoveTag(nbtTag, array2, array3);
 				}
 			}
 			return flag;
 		}
 
-		// Token: 0x0600006C RID: 108 RVA: 0x00004E64 File Offset: 0x00003064
 		public bool Move(string[] oldNameParts, string[] newNameParts)
 		{
-			return this.MoveTag(this.GetTag(oldNameParts, oldNameParts.Length), oldNameParts, newNameParts);
+			NbtTag tag = this.GetTag(oldNameParts, oldNameParts.Length);
+			return this.MoveTag(tag, oldNameParts, newNameParts);
 		}
 
-		// Token: 0x0600006D RID: 109 RVA: 0x00004E78 File Offset: 0x00003078
 		public bool Move(string oldQualifiedName, string newQualifiedName)
 		{
 			return this.Move(oldQualifiedName.Split(new char[]
@@ -335,7 +317,6 @@ namespace Rufilities.Strings
 			}));
 		}
 
-		// Token: 0x0600006E RID: 110 RVA: 0x00004EA4 File Offset: 0x000030A4
 		public void Save()
 		{
 			string directoryName = Path.GetDirectoryName(this.stringsPath);
@@ -346,59 +327,53 @@ namespace Rufilities.Strings
 			this.file.SaveToFile(this.stringsPath, NbtCompression.GZip);
 		}
 
-		// Token: 0x0600006F RID: 111 RVA: 0x00004EE0 File Offset: 0x000030E0
 		public void Save(string root)
 		{
-			string str = Path.Combine(root, this.stringsFilename);
-			string directoryName = Path.GetDirectoryName(str);
+			string text = Path.Combine(root, this.stringsFilename);
+			string directoryName = Path.GetDirectoryName(text);
 			if (!Directory.Exists(directoryName))
 			{
 				Directory.CreateDirectory(directoryName);
 			}
-			this.file.SaveToFile(str, NbtCompression.GZip);
+			this.file.SaveToFile(text, NbtCompression.GZip);
 		}
 
-		// Token: 0x06000070 RID: 112 RVA: 0x00004F20 File Offset: 0x00003120
 		private StringNode BuildNode(StringNode parent, NbtTag nodeTag)
 		{
-			bool isContainer = nodeTag is NbtCompound;
-			StringNode parent2 = new StringNode(parent, nodeTag.Name, isContainer);
-			if (isContainer)
+			bool flag = nodeTag is NbtCompound;
+			StringNode stringNode = new StringNode(parent, nodeTag.Name, flag);
+			if (flag)
 			{
-				foreach (NbtTag tag in ((NbtCompound)nodeTag).Tags)
+				NbtCompound nbtCompound = (NbtCompound)nodeTag;
+				foreach (NbtTag nodeTag2 in nbtCompound.Tags)
 				{
-					StringNode stringNode = this.BuildNode(parent2, tag);
-					parent2.Children.Add(stringNode);
+					StringNode item = this.BuildNode(stringNode, nodeTag2);
+					stringNode.Children.Add(item);
 				}
 			}
-			return parent2;
+			return stringNode;
 		}
 
-		// Token: 0x06000071 RID: 113 RVA: 0x00004FA0 File Offset: 0x000031A0
 		internal List<StringNode> ToNodes()
 		{
-			List<StringNode> nodes = new List<StringNode>();
-			foreach (NbtTag nodeTag in this.file.RootTag)
+			List<StringNode> list = new List<StringNode>();
+			foreach (NbtTag nbtTag in this.file.RootTag)
 			{
-				StringNode stringNode = this.BuildNode(null, nodeTag);
-				nodes.Add(stringNode);
+				NbtCompound nodeTag = (NbtCompound)nbtTag;
+				StringNode item = this.BuildNode(null, nodeTag);
+				list.Add(item);
 			}
-			return nodes;
+			return list;
 		}
 
-		// Token: 0x04000040 RID: 64
 		private const string META_TAG_NAME = "_meta";
 
-		// Token: 0x04000041 RID: 65
 		private const string DEFAULT_LANG_CODE = "en_US";
 
-		// Token: 0x04000042 RID: 66
 		private const string STRINGS_SUBDIR = "Text";
 
-		// Token: 0x04000043 RID: 67
 		private const string STRING_FILE_EXT = "dat";
 
-		// Token: 0x04000044 RID: 68
 		private static readonly Dictionary<string, string> metaTags = new Dictionary<string, string>
 		{
 			{
@@ -411,25 +386,22 @@ namespace Rufilities.Strings
 			},
 			{
 				"author",
-				"<empty>"
+				"Mother 4 Team"
 			},
 			{
 				"address",
-				"<empty>"
+				"http://mother4game.com"
 			},
 			{
 				"version",
-				"1.0"
+				"0.1"
 			}
 		};
 
-		// Token: 0x04000045 RID: 69
 		private string stringsFilename;
 
-		// Token: 0x04000046 RID: 70
 		private string stringsPath;
 
-		// Token: 0x04000047 RID: 71
 		private NbtFile file;
 	}
 }

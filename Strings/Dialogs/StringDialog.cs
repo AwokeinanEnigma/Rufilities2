@@ -60,7 +60,7 @@ namespace Rufilities.Strings.Dialogs
 		// Token: 0x06000082 RID: 130 RVA: 0x00005224 File Offset: 0x00003424
 		private void PopulateInsertMenu()
 		{
-			string[] psi_LEVELS = Constants.GREEK_CHARACTERS;
+			string[] psi_LEVELS = Constants.PSI_LEVELS;
 			for (int i = 0; i < psi_LEVELS.Length; i++)
 			{
 				string s = psi_LEVELS[i];

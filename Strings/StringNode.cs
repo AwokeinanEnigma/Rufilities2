@@ -1,45 +1,76 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Rufilities.Strings.StringNode
-// Assembly: Rufilities, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 8FC4E2F2-423B-45D2-9FF7-D0CCE3066F9C
-// Assembly location: C:\Users\Thomas\Documents\Mother4Restored\Mother4\bin\Debug\Rufilities.dll
-
+﻿using System;
 using System.Collections.Generic;
 
 namespace Rufilities.Strings
 {
-  internal class StringNode
-  {
-    private const char SEPARATOR = '.';
-    private string name;
-    private bool isContainer;
-    private StringNode parent;
-    private List<StringNode> children;
+	internal class StringNode
+	{
+		public string Name
+		{
+			get
+			{
+				return this.name;
+			}
+		}
 
-    public string Name => this.name;
+		public List<StringNode> Children
+		{
+			get
+			{
+				return this.children;
+			}
+		}
 
-    public List<StringNode> Children => this.children;
+		public bool IsLeaf
+		{
+			get
+			{
+				return this.children.Count == 0;
+			}
+		}
 
-    public bool IsLeaf => this.children.Count == 0;
+		public bool IsContainer
+		{
+			get
+			{
+				return this.isContainer;
+			}
+		}
 
-    public bool IsContainer => this.isContainer;
+		public StringNode(StringNode parent, string name, bool isContainer)
+		{
+			this.name = name;
+			this.parent = parent;
+			this.children = new List<StringNode>();
+			this.isContainer = isContainer;
+		}
 
-    public StringNode(StringNode parent, string name, bool isContainer)
-    {
-      this.name = name;
-      this.parent = parent;
-      this.children = new List<StringNode>();
-      this.isContainer = isContainer;
-    }
+		public string[] BuildNameList()
+		{
+			return this.BuildQualifiedName().Split(new char[]
+			{
+				'.'
+			});
+		}
 
-    public string[] BuildNameList() => this.BuildQualifiedName().Split('.');
+		public string BuildQualifiedName()
+		{
+			string text = string.Empty;
+			if (this.parent != null)
+			{
+				text = text + this.parent.BuildQualifiedName() + '.';
+			}
+			return text + this.name;
+		}
 
-    public string BuildQualifiedName()
-    {
-      string str = string.Empty;
-      if (this.parent != null)
-        str = str + this.parent.BuildQualifiedName() + (object) '.';
-      return str + this.name;
-    }
-  }
+		private const char SEPARATOR = '.';
+
+		private string name;
+
+		private bool isContainer;
+
+		private StringNode parent;
+
+		private List<StringNode> children;
+	}
 }
