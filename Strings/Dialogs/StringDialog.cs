@@ -1,716 +1,596 @@
-﻿using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
-using Rufilities.Properties;
+﻿using Rufilities.Properties;
 using Rufilities.Utility;
 using Rufilities.Utility.Controls;
 using Rufilities.Utility.Dialogs;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Rufilities.Strings.Dialogs
 {
-	// Token: 0x0200000E RID: 14
-	public class StringDialog : Form
-	{
-		// Token: 0x17000013 RID: 19
-		// (get) Token: 0x0600007D RID: 125 RVA: 0x00005170 File Offset: 0x00003370
-		public RufiniString SelectedString
-		{
-			get
-			{
-				return this.selectedString;
-			}
-		}
-
-		// Token: 0x17000014 RID: 20
-		// (get) Token: 0x0600007E RID: 126 RVA: 0x00005178 File Offset: 0x00003378
-		public bool ChangesMade
-		{
-			get
-			{
-				return this.madeChanges;
-			}
-		}
-
-		// Token: 0x0600007F RID: 127 RVA: 0x00005180 File Offset: 0x00003380
-		public StringDialog(StringFile stringFile, bool selectMode, RufiniString initialSelection)
-		{
-			this.stringFile = stringFile;
-			this.selectMode = selectMode;
-			this.initialSelection = initialSelection;
-			this.InitializeComponent();
-		}
-
-		// Token: 0x06000080 RID: 128 RVA: 0x000051A3 File Offset: 0x000033A3
-		private void MadeChanges()
-		{
-			this.madeChanges = true;
-		}
-
-		// Token: 0x06000081 RID: 129 RVA: 0x000051AC File Offset: 0x000033AC
-		private void InsertStringInString(string insert)
-		{
-			int selectionStart = this.tbString.SelectionStart;
-			this.tbString.Text = this.tbString.Text.Remove(this.tbString.SelectionStart, this.tbString.SelectionLength).Insert(this.tbString.SelectionStart, insert);
-			this.tbString.SelectionStart = selectionStart;
-			this.tbString.SelectionLength = insert.Length;
-		}
-
-		// Token: 0x06000082 RID: 130 RVA: 0x00005224 File Offset: 0x00003424
-		private void PopulateInsertMenu()
-		{
-			string[] psi_LEVELS = Constants.GREEK_CHARACTERS;
-			for (int i = 0; i < psi_LEVELS.Length; i++)
-			{
-				string s = psi_LEVELS[i];
-				this.tsmLetters.DropDownItems.Add(s, null, delegate(object sender, EventArgs e)
-				{
-					this.InsertStringInString(s);
-				});
-			}
-		}
-
-		// Token: 0x06000083 RID: 131 RVA: 0x00005280 File Offset: 0x00003480
-		private void PopulateSubTree(TreeNode parentTreeNode, StringNode node)
-		{
-			int num = node.IsContainer ? 0 : 2;
-			DraggableTreeNode draggableTreeNode = new DraggableTreeNode(node.Name, num, num);
-			draggableTreeNode.Name = node.Name;
-			draggableTreeNode.IsContainer = node.IsContainer;
-			if (parentTreeNode != null)
-			{
-				parentTreeNode.Nodes.Add(draggableTreeNode);
-			}
-			else
-			{
-				this.tvStrings.Nodes.Add(draggableTreeNode);
-			}
-			foreach (StringNode node2 in node.Children)
-			{
-				this.PopulateSubTree(draggableTreeNode, node2);
-			}
-		}
-
-		// Token: 0x06000084 RID: 132 RVA: 0x0000532C File Offset: 0x0000352C
-		private void PopulateTreeView()
-		{
-			TreeNode treeNode = null;
-			foreach (StringNode node in this.stringFile.ToNodes())
-			{
-				this.PopulateSubTree(null, node);
-			}
-			if (this.initialSelection.Names != null)
-			{
-				string[] names = this.initialSelection.Names;
-				TreeNodeCollection treeNodeCollection = this.tvStrings.Nodes;
-				int num = 0;
-				do
-				{
-					if (treeNodeCollection.ContainsKey(names[num]))
-					{
-						treeNode = treeNodeCollection[names[num]];
-					}
-					treeNodeCollection = ((treeNode != null) ? treeNode.Nodes : null);
-					num++;
-				}
-				while (treeNodeCollection != null && num < names.Length);
-			}
-			this.tvStrings.Sort();
-			if (treeNode != null)
-			{
-				this.tvStrings.SelectedNode = treeNode;
-				this.tbString.Enabled = true;
-				this.bInsert.Enabled = true;
-			}
-		}
-
-		// Token: 0x06000085 RID: 133 RVA: 0x0000541C File Offset: 0x0000361C
-		private void StringDialog_Load(object sender, EventArgs e)
-		{
-			if (!this.selectMode)
-			{
-				this.bSelect.Visible = false;
-				this.bCancel.Visible = false;
-			}
-			else
-			{
-				this.bCancel.Enabled = true;
-			}
-			this.PopulateTreeView();
-			this.PopulateInsertMenu();
-		}
-
-		// Token: 0x06000086 RID: 134 RVA: 0x000023C2 File Offset: 0x000005C2
-		private void bSelect_Click(object sender, EventArgs e)
-		{
-			base.DialogResult = DialogResult.OK;
-			this.UpdateCurrentString();
-			this.stringFile.Save();
-			this.madeChanges = false;
-			base.Close();
-		}
-
-		// Token: 0x06000087 RID: 135 RVA: 0x000023D1 File Offset: 0x000005D1
-		private void bCancel_Click(object sender, EventArgs e)
-		{
-			base.DialogResult = DialogResult.Cancel;
-			base.Close();
-		}
-
-		// Token: 0x06000088 RID: 136 RVA: 0x00005458 File Offset: 0x00003658
-		private void AddFolder(string qualifiedName)
-		{
-			if (this.tvStrings.GetNodeByFullPath(qualifiedName) == null)
-			{
-				if (this.stringFile.PutFolder(qualifiedName))
-				{
-					string[] array = qualifiedName.Split(new char[]
-					{
-						'.'
-					});
-					string fullPath = string.Join('.'.ToString(), array, 0, array.Length - 1);
-					string text = array[array.Length - 1];
-					DraggableTreeNode draggableTreeNode = new DraggableTreeNode(text, 0, 0);
-					draggableTreeNode.Name = text;
-					draggableTreeNode.IsContainer = true;
-					TreeNode nodeByFullPath = this.tvStrings.GetNodeByFullPath(fullPath);
-					if (nodeByFullPath != null)
-					{
-						nodeByFullPath.Nodes.Add(draggableTreeNode);
-					}
-					else
-					{
-						this.tvStrings.Nodes.Add(draggableTreeNode);
-					}
-					this.tvStrings.SelectedNode = draggableTreeNode;
-					this.MadeChanges();
-					return;
-				}
-			}
-			else
-			{
-				string text2 = string.Format("The folder \"{0}\" already exists.", qualifiedName);
-				MessageBox.Show(this, text2, "Cannot Add Folder", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			}
-		}
-
-		// Token: 0x06000089 RID: 137 RVA: 0x00005538 File Offset: 0x00003738
-		private void RemoveNode(string qualifiedName)
-		{
-			TreeNode nodeByFullPath = this.tvStrings.GetNodeByFullPath(qualifiedName);
-			if (nodeByFullPath != null && this.stringFile.Remove(qualifiedName))
-			{
-				this.tvStrings.Nodes.Remove(nodeByFullPath);
-				this.MadeChanges();
-			}
-		}
-
-		// Token: 0x0600008A RID: 138 RVA: 0x0000557C File Offset: 0x0000377C
-		private void AddString(string qualifiedName)
-		{
-			if (this.tvStrings.GetNodeByFullPath(qualifiedName) == null)
-			{
-				if (this.stringFile.Put(qualifiedName, string.Empty))
-				{
-					string[] array = qualifiedName.Split(new char[]
-					{
-						'.'
-					});
-					string fullPath = string.Join('.'.ToString(), array, 0, array.Length - 1);
-					string text = array[array.Length - 1];
-					DraggableTreeNode draggableTreeNode = new DraggableTreeNode(text, 2, 2);
-					draggableTreeNode.Name = text;
-					TreeNode nodeByFullPath = this.tvStrings.GetNodeByFullPath(fullPath);
-					if (nodeByFullPath != null)
-					{
-						nodeByFullPath.Nodes.Add(draggableTreeNode);
-					}
-					else
-					{
-						this.tvStrings.Nodes.Add(draggableTreeNode);
-					}
-					this.tvStrings.SelectedNode = draggableTreeNode;
-					return;
-				}
-			}
-			else
-			{
-				string text2 = string.Format("The string \"{0}\" already exists.", qualifiedName);
-				MessageBox.Show(this, text2, "Cannot Add String", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			}
-		}
-
-		// Token: 0x0600008B RID: 139 RVA: 0x00005654 File Offset: 0x00003854
-		private void UpdateString(string qualifiedName, string[] lines)
-		{
-			string text = string.Join("\n", lines);
-			string value = this.stringFile.Get(qualifiedName).Value;
-			if (text != value)
-			{
-				this.stringFile.Put(qualifiedName, text);
-				this.MadeChanges();
-			}
-		}
-
-		// Token: 0x0600008C RID: 140 RVA: 0x0000569F File Offset: 0x0000389F
-		private void RenameNode(string oldQualifiedName, string newQualifiedName)
-		{
-			this.stringFile.Move(oldQualifiedName, newQualifiedName);
-			this.MadeChanges();
-		}
-
-		// Token: 0x0600008D RID: 141 RVA: 0x000056B8 File Offset: 0x000038B8
-		private void bAddFolder_Click(object sender, EventArgs e)
-		{
-			TreeNode selectedNode = this.tvStrings.SelectedNode;
-			InputDialog inputDialog = new InputDialog(InputDialog.InputType.Identifier, "New Folder", "Enter the folder's name");
-			if (inputDialog.ShowDialog(this) == DialogResult.OK)
-			{
-				string arg = (selectedNode != null) ? this.tvStrings.SelectedNode.FullPath : string.Empty;
-				string qualifiedName = (selectedNode != null) ? (arg + "." + inputDialog.Value) : inputDialog.Value;
-				this.AddFolder(qualifiedName);
-			}
-		}
-
-		// Token: 0x0600008E RID: 142 RVA: 0x0000572C File Offset: 0x0000392C
-		private void bRemoveFolder_Click(object sender, EventArgs e)
-		{
-			if (this.tvStrings.SelectedNode != null)
-			{
-				string fullPath = this.tvStrings.SelectedNode.FullPath;
-				string text = string.Format("Are you sure you want to delete the folder \"{0}\" and all of its contents?", fullPath);
-				if (MessageBox.Show(this, text, "Folder Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-				{
-					this.RemoveNode(fullPath);
-				}
-			}
-		}
-
-		// Token: 0x0600008F RID: 143 RVA: 0x00005784 File Offset: 0x00003984
-		private void bAddString_Click(object sender, EventArgs e)
-		{
-			TreeNode selectedNode = this.tvStrings.SelectedNode;
-			InputDialog inputDialog = new InputDialog(InputDialog.InputType.Identifier, "New String", "Enter the string's name");
-			if (inputDialog.ShowDialog(this) == DialogResult.OK)
-			{
-				string qualifiedName = ((selectedNode != null) ? this.tvStrings.SelectedNode.FullPath : string.Empty) + "." + inputDialog.Value;
-				this.AddString(qualifiedName);
-			}
-		}
-
-		// Token: 0x06000090 RID: 144 RVA: 0x000057EC File Offset: 0x000039EC
-		private void bRemoveString_Click(object sender, EventArgs e)
-		{
-			string fullPath = this.tvStrings.SelectedNode.FullPath;
-			string text = string.Format("Are you sure you want to delete the string \"{0}\"?", this.selectedString.QualifiedName);
-			if (MessageBox.Show(this, text, "String Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-			{
-				this.RemoveNode(fullPath);
-			}
-		}
-
-		// Token: 0x06000091 RID: 145 RVA: 0x00005840 File Offset: 0x00003A40
-		private void UpdateCurrentString()
-		{
-			TreeNode selectedNode = this.tvStrings.SelectedNode;
-			if (selectedNode is DraggableTreeNode)
-			{
-				DraggableTreeNode draggableTreeNode = (DraggableTreeNode)selectedNode;
-				if (!draggableTreeNode.IsContainer)
-				{
-					this.UpdateString(draggableTreeNode.FullPath, this.tbString.Lines);
-				}
-			}
-		}
-
-		// Token: 0x06000092 RID: 146 RVA: 0x00005887 File Offset: 0x00003A87
-		private void tvStrings_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-		{
-			this.UpdateCurrentString();
-		}
-
-		// Token: 0x06000093 RID: 147 RVA: 0x00005890 File Offset: 0x00003A90
-		private void tvStrings_AfterSelect(object sender, TreeViewEventArgs e)
-		{
-			TreeNode node = e.Node;
-			if (!(node is DraggableTreeNode))
-			{
-				if (node == null)
-				{
-					this.bAddFolder.Enabled = true;
-					this.bRemoveFolder.Enabled = false;
-					this.bAddString.Enabled = false;
-					this.bRemoveString.Enabled = false;
-					this.bInsert.Enabled = false;
-					this.bSelect.Enabled = false;
-					this.tbString.Enabled = false;
-					this.tbString.Clear();
-				}
-				return;
-			}
-			DraggableTreeNode draggableTreeNode = (DraggableTreeNode)node;
-			if (!draggableTreeNode.IsContainer)
-			{
-				string fullPath = draggableTreeNode.FullPath;
-				this.bInsert.Enabled = true;
-				this.tbString.Enabled = true;
-				RufiniString rufiniString = this.stringFile.Get(fullPath);
-				if (rufiniString.Value != null)
-				{
-					this.tbString.Lines = rufiniString.Value.Split(new char[]
-					{
-						'\n'
-					});
-				}
-				else
-				{
-					MessageBox.Show(this.tbString, "Something funky happened. There's a string here, but the value couldn't be read. The string's name probably has a period in it, which isn't allowed. You'll have to recover from this manually.", "Whoa!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-					this.tbString.Text = string.Empty;
-				}
-				this.selectedString = rufiniString;
-				this.bSelect.Enabled = this.selectMode;
-				this.bAddFolder.Enabled = false;
-				this.bRemoveFolder.Enabled = false;
-				this.bRemoveString.Enabled = true;
-				this.bAddString.Enabled = false;
-				return;
-			}
-			this.bAddFolder.Enabled = true;
-			this.bRemoveFolder.Enabled = true;
-			this.bRemoveString.Enabled = false;
-			this.bAddString.Enabled = true;
-			this.bInsert.Enabled = false;
-			this.bSelect.Enabled = false;
-			this.tbString.Enabled = false;
-			this.tbString.Clear();
-		}
-
-		// Token: 0x06000094 RID: 148 RVA: 0x00005A4C File Offset: 0x00003C4C
-		private void tvStrings_DragDrop(object sender, DragEventArgs e)
-		{
-			if (this.tvStrings.LastDragPath != null && this.tvStrings.LastDropPath != null)
-			{
-				string lastDragPath = this.tvStrings.LastDragPath;
-				string arg = lastDragPath.Substring(lastDragPath.LastIndexOf('.') + 1);
-				string newQualifiedName = this.tvStrings.LastDropPath + "." + arg;
-				this.RenameNode(lastDragPath, newQualifiedName);
-			}
-		}
-
-		// Token: 0x06000095 RID: 149 RVA: 0x00005887 File Offset: 0x00003A87
-		private void StringDialog_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			this.UpdateCurrentString();
-		}
-
-		// Token: 0x06000096 RID: 150 RVA: 0x00005AAF File Offset: 0x00003CAF
-		private void bSave_Click(object sender, EventArgs e)
-		{
-			this.UpdateCurrentString();
-			this.stringFile.Save();
-			this.madeChanges = false;
-		}
-
-		// Token: 0x06000097 RID: 151 RVA: 0x00005AC9 File Offset: 0x00003CC9
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && this.components != null)
-			{
-				this.components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
-
-		// Token: 0x06000098 RID: 152 RVA: 0x00005AE8 File Offset: 0x00003CE8
-		private void InitializeComponent()
-		{
-			this.components = new Container();
-			this.tsStrings = new ToolStrip();
-			this.bSave = new ToolStripButton();
-			this.toolStripSeparator3 = new ToolStripSeparator();
-			this.bAddFolder = new ToolStripButton();
-			this.bRemoveFolder = new ToolStripButton();
-			this.toolStripSeparator2 = new ToolStripSeparator();
-			this.bAddString = new ToolStripButton();
-			this.bRemoveString = new ToolStripButton();
-			this.bSelect = new ToolStripButton();
-			this.bCancel = new ToolStripButton();
-			this.toolStripSeparator1 = new ToolStripSeparator();
-			this.bInsert = new ToolStripDropDownButton();
-			this.tsmControls = new ToolStripMenuItem();
-			this.tsmNames = new ToolStripMenuItem();
-			this.tsmStats = new ToolStripMenuItem();
-			this.tsmLetters = new ToolStripMenuItem();
-			this.tsmValues = new ToolStripMenuItem();
-			this.moneyToolStripMenuItem = new ToolStripMenuItem();
-			this.mainSplit = new SplitContainer();
-			this.ilTree = new ImageList(this.components);
-			this.tbString = new TextBox();
-			this.tvStrings = new DraggableTreeView();
-			this.tsStrings.SuspendLayout();
-			this.mainSplit.BeginInit();
-			this.mainSplit.Panel1.SuspendLayout();
-			this.mainSplit.Panel2.SuspendLayout();
-			this.mainSplit.SuspendLayout();
-			base.SuspendLayout();
-			this.tsStrings.Items.AddRange(new ToolStripItem[]
-			{
-				this.bSave,
-				this.toolStripSeparator3,
-				this.bAddFolder,
-				this.bRemoveFolder,
-				this.toolStripSeparator2,
-				this.bAddString,
-				this.bRemoveString,
-				this.bSelect,
-				this.bCancel,
-				this.toolStripSeparator1,
-				this.bInsert
-			});
-			this.tsStrings.Location = new Point(0, 0);
-			this.tsStrings.Name = "tsStrings";
-			this.tsStrings.Size = new Size(624, 25);
-			this.tsStrings.TabIndex = 0;
-			this.tsStrings.Text = "String Tools";
-			this.bSave.DisplayStyle = ToolStripItemDisplayStyle.Image;
-			this.bSave.Image = Resources.bSave_Image;
-			this.bSave.ImageTransparentColor = Color.Magenta;
-			this.bSave.Name = "bSave";
-			this.bSave.Size = new Size(23, 22);
-			this.bSave.Text = "Save Strings";
-			this.bSave.Click += this.bSave_Click;
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new Size(6, 25);
-			this.bAddFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
-			this.bAddFolder.Image = Resources.bAddFolder_Image;
-			this.bAddFolder.ImageTransparentColor = Color.Magenta;
-			this.bAddFolder.Name = "bAddFolder";
-			this.bAddFolder.Size = new Size(23, 22);
-			this.bAddFolder.Text = "Add Folder";
-			this.bAddFolder.Click += this.bAddFolder_Click;
-			this.bRemoveFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
-			this.bRemoveFolder.Enabled = false;
-			this.bRemoveFolder.Image = Resources.bRemoveFolder_Image;
-			this.bRemoveFolder.ImageTransparentColor = Color.Magenta;
-			this.bRemoveFolder.Name = "bRemoveFolder";
-			this.bRemoveFolder.Size = new Size(23, 22);
-			this.bRemoveFolder.Text = "Delete Folder";
-			this.bRemoveFolder.Click += this.bRemoveFolder_Click;
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new Size(6, 25);
-			this.bAddString.DisplayStyle = ToolStripItemDisplayStyle.Image;
-			this.bAddString.Image = Resources.bAddString_Image;
-			this.bAddString.ImageTransparentColor = Color.Magenta;
-			this.bAddString.Name = "bAddString";
-			this.bAddString.Size = new Size(23, 22);
-			this.bAddString.Text = "Add String";
-			this.bAddString.Click += this.bAddString_Click;
-			this.bRemoveString.DisplayStyle = ToolStripItemDisplayStyle.Image;
-			this.bRemoveString.Enabled = false;
-			this.bRemoveString.Image = Resources.bRemoveString_Image;
-			this.bRemoveString.ImageTransparentColor = Color.Magenta;
-			this.bRemoveString.Name = "bRemoveString";
-			this.bRemoveString.Size = new Size(23, 22);
-			this.bRemoveString.Text = "Delete String";
-			this.bRemoveString.Click += this.bRemoveString_Click;
-			this.bSelect.Alignment = ToolStripItemAlignment.Right;
-			this.bSelect.Enabled = false;
-			this.bSelect.Image = Resources.bSelect_Image;
-			this.bSelect.ImageTransparentColor = Color.Magenta;
-			this.bSelect.Name = "bSelect";
-			this.bSelect.Size = new Size(58, 22);
-			this.bSelect.Text = "Select";
-			this.bSelect.Click += this.bSelect_Click;
-			this.bCancel.Alignment = ToolStripItemAlignment.Right;
-			this.bCancel.Enabled = false;
-			this.bCancel.Image = Resources.bCancel_Image;
-			this.bCancel.ImageTransparentColor = Color.Magenta;
-			this.bCancel.Name = "bCancel";
-			this.bCancel.Size = new Size(63, 22);
-			this.bCancel.Text = "Cancel";
-			this.bCancel.Click += this.bCancel_Click;
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new Size(6, 25);
-			this.bInsert.DropDownItems.AddRange(new ToolStripItem[]
-			{
-				this.tsmControls,
-				this.tsmNames,
-				this.tsmStats,
-				this.tsmLetters,
-				this.tsmValues
-			});
-			this.bInsert.Enabled = false;
-			this.bInsert.Image = Resources.bInsert_Image;
-			this.bInsert.ImageTransparentColor = Color.Magenta;
-			this.bInsert.Name = "bInsert";
-			this.bInsert.Size = new Size(65, 22);
-			this.bInsert.Text = "Insert";
-			this.tsmControls.Name = "tsmControls";
-			this.tsmControls.Size = new Size(165, 22);
-			this.tsmControls.Text = "Controls";
-			this.tsmNames.Name = "tsmNames";
-			this.tsmNames.Size = new Size(165, 22);
-			this.tsmNames.Text = "Character Names";
-			this.tsmStats.Name = "tsmStats";
-			this.tsmStats.Size = new Size(165, 22);
-			this.tsmStats.Text = "Character Stats";
-			this.tsmLetters.Name = "tsmLetters";
-			this.tsmLetters.Size = new Size(165, 22);
-			this.tsmLetters.Text = "PSI Levels";
-			this.tsmValues.DropDownItems.AddRange(new ToolStripItem[]
-			{
-				this.moneyToolStripMenuItem
-			});
-			this.tsmValues.Name = "tsmValues";
-			this.tsmValues.Size = new Size(165, 22);
-			this.tsmValues.Text = "Values";
-			this.moneyToolStripMenuItem.Name = "moneyToolStripMenuItem";
-			this.moneyToolStripMenuItem.Size = new Size(111, 22);
-			this.moneyToolStripMenuItem.Text = "Money";
-			this.mainSplit.Dock = DockStyle.Fill;
-			this.mainSplit.Location = new Point(0, 25);
-			this.mainSplit.Name = "mainSplit";
-			this.mainSplit.Panel1.Controls.Add(this.tvStrings);
-			this.mainSplit.Panel2.Controls.Add(this.tbString);
-			this.mainSplit.Size = new Size(624, 336);
-			this.mainSplit.SplitterDistance = 207;
-			this.mainSplit.TabIndex = 1;
-			this.ilTree.ImageStream = Resources.ilTree_ImageStream;
-			this.ilTree.TransparentColor = Color.Transparent;
-			this.ilTree.Images.SetKeyName(0, "folderClosed");
-			this.ilTree.Images.SetKeyName(1, "folderOpen");
-			this.ilTree.Images.SetKeyName(2, "text");
-			this.tbString.Dock = DockStyle.Fill;
-			this.tbString.Enabled = false;
-			this.tbString.Font = new Font("Lucida Console", 9.75f, FontStyle.Regular, GraphicsUnit.Point, 0);
-			this.tbString.Location = new Point(0, 0);
-			this.tbString.Multiline = true;
-			this.tbString.Name = "tbString";
-			this.tbString.Size = new Size(413, 336);
-			this.tbString.TabIndex = 0;
-			this.tvStrings.AllowDrop = true;
-			this.tvStrings.Dock = DockStyle.Fill;
-			this.tvStrings.DragThreshold = 30;
-			this.tvStrings.HideSelection = false;
-			this.tvStrings.ImageIndex = 0;
-			this.tvStrings.ImageList = this.ilTree;
-			this.tvStrings.Location = new Point(0, 0);
-			this.tvStrings.Name = "tvStrings";
-			this.tvStrings.PathSeparator = ".";
-			this.tvStrings.SelectedImageIndex = 0;
-			this.tvStrings.Size = new Size(207, 336);
-			this.tvStrings.Sorted = true;
-			this.tvStrings.TabIndex = 0;
-			this.tvStrings.BeforeSelect += this.tvStrings_BeforeSelect;
-			this.tvStrings.AfterSelect += this.tvStrings_AfterSelect;
-			this.tvStrings.DragDrop += this.tvStrings_DragDrop;
-			base.AutoScaleDimensions = new SizeF(6f, 13f);
-			base.AutoScaleMode = AutoScaleMode.Font;
-			base.ClientSize = new Size(624, 361);
-			base.Controls.Add(this.mainSplit);
-			base.Controls.Add(this.tsStrings);
-			base.MinimizeBox = false;
-			this.MinimumSize = new Size(500, 320);
-			base.Name = "StringDialog";
-			base.ShowIcon = false;
-			base.ShowInTaskbar = false;
-			base.StartPosition = FormStartPosition.CenterParent;
-			this.Text = "Strings";
-			base.FormClosing += this.StringDialog_FormClosing;
-			base.Load += this.StringDialog_Load;
-			this.tsStrings.ResumeLayout(false);
-			this.tsStrings.PerformLayout();
-			this.mainSplit.Panel1.ResumeLayout(false);
-			this.mainSplit.Panel2.ResumeLayout(false);
-			this.mainSplit.Panel2.PerformLayout();
-			this.mainSplit.EndInit();
-			this.mainSplit.ResumeLayout(false);
-			base.ResumeLayout(false);
-			base.PerformLayout();
-		}
-
-		// Token: 0x0400004D RID: 77
-		private StringFile stringFile;
-
-		// Token: 0x0400004E RID: 78
-		private RufiniString selectedString;
-
-		// Token: 0x0400004F RID: 79
-		private RufiniString initialSelection;
-
-		// Token: 0x04000050 RID: 80
-		private bool selectMode;
-
-		// Token: 0x04000051 RID: 81
-		private bool madeChanges;
-
-		// Token: 0x04000052 RID: 82
-		private IContainer components;
-
-		// Token: 0x04000053 RID: 83
-		private ToolStrip tsStrings;
-
-		// Token: 0x04000054 RID: 84
-		private ToolStripButton bAddFolder;
-
-		// Token: 0x04000055 RID: 85
-		private ToolStripSeparator toolStripSeparator2;
-
-		// Token: 0x04000056 RID: 86
-		private ToolStripButton bAddString;
-
-		// Token: 0x04000057 RID: 87
-		private ToolStripButton bRemoveString;
-
-		// Token: 0x04000058 RID: 88
-		private ToolStripButton bSelect;
-
-		// Token: 0x04000059 RID: 89
-		private ToolStripButton bCancel;
-
-		// Token: 0x0400005A RID: 90
-		private SplitContainer mainSplit;
-
-		// Token: 0x0400005B RID: 91
-		private TextBox tbString;
-
-		// Token: 0x0400005C RID: 92
-		private ToolStripButton bRemoveFolder;
-
-		// Token: 0x0400005D RID: 93
-		private ImageList ilTree;
-
-		// Token: 0x0400005E RID: 94
-		private ToolStripSeparator toolStripSeparator1;
-
-		// Token: 0x0400005F RID: 95
-		private ToolStripDropDownButton bInsert;
-
-		// Token: 0x04000060 RID: 96
-		private ToolStripMenuItem tsmNames;
-
-		// Token: 0x04000061 RID: 97
-		private ToolStripMenuItem tsmStats;
-
-		// Token: 0x04000062 RID: 98
-		private ToolStripMenuItem tsmLetters;
-
-		// Token: 0x04000063 RID: 99
-		private ToolStripMenuItem tsmValues;
-
-		// Token: 0x04000064 RID: 100
-		private ToolStripMenuItem moneyToolStripMenuItem;
-
-		// Token: 0x04000065 RID: 101
-		private ToolStripMenuItem tsmControls;
-
-		// Token: 0x04000066 RID: 102
-		private DraggableTreeView tvStrings;
-
-		// Token: 0x04000067 RID: 103
-		private ToolStripButton bSave;
-
-		// Token: 0x04000068 RID: 104
-		private ToolStripSeparator toolStripSeparator3;
-	}
+    public class StringDialog : Form
+    {
+        public RufiniString SelectedString => selectedString;
+        public bool ChangesMade => madeChanges;
+        public StringDialog(StringFile stringFile, bool selectMode, RufiniString initialSelection)
+        {
+            this.stringFile = stringFile;
+            this.selectMode = selectMode;
+            this.initialSelection = initialSelection;
+            InitializeComponent();
+        }
+        private void MadeChanges()
+        {
+            madeChanges = true;
+        }
+        private void InsertStringInString(string insert)
+        {
+            int selectionStart = tbString.SelectionStart;
+            tbString.Text = tbString.Text.Remove(tbString.SelectionStart, tbString.SelectionLength).Insert(tbString.SelectionStart, insert);
+            tbString.SelectionStart = selectionStart;
+            tbString.SelectionLength = insert.Length;
+        }
+        private void PopulateInsertMenu()
+        {
+            string[] psi_LEVELS = Constants.GREEK_CHARACTERS;
+            for (int i = 0; i < psi_LEVELS.Length; i++)
+            {
+                string s = psi_LEVELS[i];
+                tsmLetters.DropDownItems.Add(s, null, delegate (object sender, EventArgs e)
+                {
+                    InsertStringInString(s);
+                });
+            }
+        }
+        private void PopulateSubTree(TreeNode parentTreeNode, StringNode node)
+        {
+            int num = node.IsContainer ? 0 : 2;
+            DraggableTreeNode draggableTreeNode = new DraggableTreeNode(node.Name, num, num)
+            {
+                Name = node.Name,
+                IsContainer = node.IsContainer
+            };
+            if (parentTreeNode != null)
+            {
+                parentTreeNode.Nodes.Add(draggableTreeNode);
+            }
+            else
+            {
+                tvStrings.Nodes.Add(draggableTreeNode);
+            }
+            foreach (StringNode node2 in node.Children)
+            {
+                PopulateSubTree(draggableTreeNode, node2);
+            }
+        }
+        private void PopulateTreeView()
+        {
+            TreeNode treeNode = null;
+            foreach (StringNode node in stringFile.ToNodes())
+            {
+                PopulateSubTree(null, node);
+            }
+            if (initialSelection.Names != null)
+            {
+                string[] names = initialSelection.Names;
+                TreeNodeCollection treeNodeCollection = tvStrings.Nodes;
+                int num = 0;
+                do
+                {
+                    if (treeNodeCollection.ContainsKey(names[num]))
+                    {
+                        treeNode = treeNodeCollection[names[num]];
+                    }
+                    treeNodeCollection = ((treeNode != null) ? treeNode.Nodes : null);
+                    num++;
+                }
+                while (treeNodeCollection != null && num < names.Length);
+            }
+            tvStrings.Sort();
+            if (treeNode != null)
+            {
+                tvStrings.SelectedNode = treeNode;
+                tbString.Enabled = true;
+                bInsert.Enabled = true;
+            }
+        }
+        private void StringDialog_Load(object sender, EventArgs e)
+        {
+            if (!selectMode)
+            {
+                bSelect.Visible = false;
+                bCancel.Visible = false;
+            }
+            else
+            {
+                bCancel.Enabled = true;
+            }
+            PopulateTreeView();
+            PopulateInsertMenu();
+        }
+        private void bSelect_Click(object sender, EventArgs e)
+        {
+            base.DialogResult = DialogResult.OK;
+            UpdateCurrentString();
+            stringFile.Save();
+            madeChanges = false;
+            base.Close();
+        }
+        private void bCancel_Click(object sender, EventArgs e)
+        {
+            base.DialogResult = DialogResult.Cancel;
+            base.Close();
+        }
+        private void AddFolder(string qualifiedName)
+        {
+            if (tvStrings.GetNodeByFullPath(qualifiedName) == null)
+            {
+                if (stringFile.PutFolder(qualifiedName))
+                {
+                    string[] array = qualifiedName.Split(new char[]
+                    {
+                        '.'
+                    });
+                    string fullPath = string.Join('.'.ToString(), array, 0, array.Length - 1);
+                    string text = array[array.Length - 1];
+                    DraggableTreeNode draggableTreeNode = new DraggableTreeNode(text, 0, 0)
+                    {
+                        Name = text,
+                        IsContainer = true
+                    };
+                    TreeNode nodeByFullPath = tvStrings.GetNodeByFullPath(fullPath);
+                    if (nodeByFullPath != null)
+                    {
+                        nodeByFullPath.Nodes.Add(draggableTreeNode);
+                    }
+                    else
+                    {
+                        tvStrings.Nodes.Add(draggableTreeNode);
+                    }
+                    tvStrings.SelectedNode = draggableTreeNode;
+                    MadeChanges();
+                    return;
+                }
+            }
+            else
+            {
+                string text2 = string.Format("The folder \"{0}\" already exists.", qualifiedName);
+                MessageBox.Show(this, text2, "Cannot Add Folder", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            }
+        }
+        private void RemoveNode(string qualifiedName)
+        {
+            TreeNode nodeByFullPath = tvStrings.GetNodeByFullPath(qualifiedName);
+            if (nodeByFullPath != null && stringFile.Remove(qualifiedName))
+            {
+                tvStrings.Nodes.Remove(nodeByFullPath);
+                MadeChanges();
+            }
+        }
+        private void AddString(string qualifiedName)
+        {
+            if (tvStrings.GetNodeByFullPath(qualifiedName) == null)
+            {
+                if (stringFile.Put(qualifiedName, string.Empty))
+                {
+                    string[] array = qualifiedName.Split(new char[]
+                    {
+                        '.'
+                    });
+                    string fullPath = string.Join('.'.ToString(), array, 0, array.Length - 1);
+                    string text = array[array.Length - 1];
+                    DraggableTreeNode draggableTreeNode = new DraggableTreeNode(text, 2, 2)
+                    {
+                        Name = text
+                    };
+                    TreeNode nodeByFullPath = tvStrings.GetNodeByFullPath(fullPath);
+                    if (nodeByFullPath != null)
+                    {
+                        nodeByFullPath.Nodes.Add(draggableTreeNode);
+                    }
+                    else
+                    {
+                        tvStrings.Nodes.Add(draggableTreeNode);
+                    }
+                    tvStrings.SelectedNode = draggableTreeNode;
+                    return;
+                }
+            }
+            else
+            {
+                string text2 = string.Format("The string \"{0}\" already exists.", qualifiedName);
+                MessageBox.Show(this, text2, "Cannot Add String", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            }
+        }
+        private void UpdateString(string qualifiedName, string[] lines)
+        {
+            string text = string.Join("\n", lines);
+            string value = stringFile.Get(qualifiedName).Value;
+            if (text != value)
+            {
+                stringFile.Put(qualifiedName, text);
+                MadeChanges();
+            }
+        }
+        private void RenameNode(string oldQualifiedName, string newQualifiedName)
+        {
+            stringFile.Move(oldQualifiedName, newQualifiedName);
+            MadeChanges();
+        }
+        private void bAddFolder_Click(object sender, EventArgs e)
+        {
+            TreeNode selectedNode = tvStrings.SelectedNode;
+            InputDialog inputDialog = new InputDialog(InputDialog.InputType.Identifier, "New Folder", "Enter the folder's name");
+            if (inputDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                string arg = (selectedNode != null) ? tvStrings.SelectedNode.FullPath : string.Empty;
+                string qualifiedName = (selectedNode != null) ? (arg + "." + inputDialog.Value) : inputDialog.Value;
+                AddFolder(qualifiedName);
+            }
+        }
+        private void bRemoveFolder_Click(object sender, EventArgs e)
+        {
+            if (tvStrings.SelectedNode != null)
+            {
+                string fullPath = tvStrings.SelectedNode.FullPath;
+                string text = string.Format("Are you sure you want to delete the folder \"{0}\" and all of its contents?", fullPath);
+                if (MessageBox.Show(this, text, "Folder Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                {
+                    RemoveNode(fullPath);
+                }
+            }
+        }
+        private void bAddString_Click(object sender, EventArgs e)
+        {
+            TreeNode selectedNode = tvStrings.SelectedNode;
+            InputDialog inputDialog = new InputDialog(InputDialog.InputType.Identifier, "New String", "Enter the string's name");
+            if (inputDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                string qualifiedName = ((selectedNode != null) ? tvStrings.SelectedNode.FullPath : string.Empty) + "." + inputDialog.Value;
+                AddString(qualifiedName);
+            }
+        }
+        private void bRemoveString_Click(object sender, EventArgs e)
+        {
+            string fullPath = tvStrings.SelectedNode.FullPath;
+            string text = string.Format("Are you sure you want to delete the string \"{0}\"?", selectedString.QualifiedName);
+            if (MessageBox.Show(this, text, "String Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            {
+                RemoveNode(fullPath);
+            }
+        }
+        private void UpdateCurrentString()
+        {
+            TreeNode selectedNode = tvStrings.SelectedNode;
+            if (selectedNode is DraggableTreeNode)
+            {
+                DraggableTreeNode draggableTreeNode = (DraggableTreeNode)selectedNode;
+                if (!draggableTreeNode.IsContainer)
+                {
+                    UpdateString(draggableTreeNode.FullPath, tbString.Lines);
+                }
+            }
+        }
+        private void tvStrings_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            UpdateCurrentString();
+        }
+        private void tvStrings_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeNode node = e.Node;
+            if (!(node is DraggableTreeNode))
+            {
+                if (node == null)
+                {
+                    bAddFolder.Enabled = true;
+                    bRemoveFolder.Enabled = false;
+                    bAddString.Enabled = false;
+                    bRemoveString.Enabled = false;
+                    bInsert.Enabled = false;
+                    bSelect.Enabled = false;
+                    tbString.Enabled = false;
+                    tbString.Clear();
+                }
+                return;
+            }
+            DraggableTreeNode draggableTreeNode = (DraggableTreeNode)node;
+            if (!draggableTreeNode.IsContainer)
+            {
+                string fullPath = draggableTreeNode.FullPath;
+                bInsert.Enabled = true;
+                tbString.Enabled = true;
+                RufiniString rufiniString = stringFile.Get(fullPath);
+                if (rufiniString.Value != null)
+                {
+                    tbString.Lines = rufiniString.Value.Split(new char[]
+                    {
+                        '\n'
+                    });
+                }
+                else
+                {
+                    MessageBox.Show(tbString, "Something funky happened. There's a string here, but the value couldn't be read. The string's name probably has a period in it, which isn't allowed. You'll have to recover from this manually.", "Whoa!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    tbString.Text = string.Empty;
+                }
+                selectedString = rufiniString;
+                bSelect.Enabled = selectMode;
+                bAddFolder.Enabled = false;
+                bRemoveFolder.Enabled = false;
+                bRemoveString.Enabled = true;
+                bAddString.Enabled = false;
+                return;
+            }
+            bAddFolder.Enabled = true;
+            bRemoveFolder.Enabled = true;
+            bRemoveString.Enabled = false;
+            bAddString.Enabled = true;
+            bInsert.Enabled = false;
+            bSelect.Enabled = false;
+            tbString.Enabled = false;
+            tbString.Clear();
+        }
+        private void tvStrings_DragDrop(object sender, DragEventArgs e)
+        {
+            if (tvStrings.LastDragPath != null && tvStrings.LastDropPath != null)
+            {
+                string lastDragPath = tvStrings.LastDragPath;
+                string arg = lastDragPath.Substring(lastDragPath.LastIndexOf('.') + 1);
+                string newQualifiedName = tvStrings.LastDropPath + "." + arg;
+                RenameNode(lastDragPath, newQualifiedName);
+            }
+        }
+        private void StringDialog_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            UpdateCurrentString();
+        }
+        private void bSave_Click(object sender, EventArgs e)
+        {
+            UpdateCurrentString();
+            stringFile.Save();
+            madeChanges = false;
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null)
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+        private void InitializeComponent()
+        {
+            components = new Container();
+            tsStrings = new ToolStrip();
+            bSave = new ToolStripButton();
+            toolStripSeparator3 = new ToolStripSeparator();
+            bAddFolder = new ToolStripButton();
+            bRemoveFolder = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
+            bAddString = new ToolStripButton();
+            bRemoveString = new ToolStripButton();
+            bSelect = new ToolStripButton();
+            bCancel = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            bInsert = new ToolStripDropDownButton();
+            tsmControls = new ToolStripMenuItem();
+            tsmNames = new ToolStripMenuItem();
+            tsmStats = new ToolStripMenuItem();
+            tsmLetters = new ToolStripMenuItem();
+            tsmValues = new ToolStripMenuItem();
+            moneyToolStripMenuItem = new ToolStripMenuItem();
+            mainSplit = new SplitContainer();
+            ilTree = new ImageList(components);
+            tbString = new TextBox();
+            tvStrings = new DraggableTreeView();
+            tsStrings.SuspendLayout();
+            mainSplit.BeginInit();
+            mainSplit.Panel1.SuspendLayout();
+            mainSplit.Panel2.SuspendLayout();
+            mainSplit.SuspendLayout();
+            base.SuspendLayout();
+            tsStrings.Items.AddRange(new ToolStripItem[]
+            {
+                bSave,
+                toolStripSeparator3,
+                bAddFolder,
+                bRemoveFolder,
+                toolStripSeparator2,
+                bAddString,
+                bRemoveString,
+                bSelect,
+                bCancel,
+                toolStripSeparator1,
+                bInsert
+            });
+            tsStrings.Location = new Point(0, 0);
+            tsStrings.Name = "tsStrings";
+            tsStrings.Size = new Size(624, 25);
+            tsStrings.TabIndex = 0;
+            tsStrings.Text = "String Tools";
+            bSave.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            bSave.Image = Resources.bSave_Image;
+            bSave.ImageTransparentColor = Color.Magenta;
+            bSave.Name = "bSave";
+            bSave.Size = new Size(23, 22);
+            bSave.Text = "Save Strings";
+            bSave.Click += bSave_Click;
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(6, 25);
+            bAddFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            bAddFolder.Image = Resources.bAddFolder_Image;
+            bAddFolder.ImageTransparentColor = Color.Magenta;
+            bAddFolder.Name = "bAddFolder";
+            bAddFolder.Size = new Size(23, 22);
+            bAddFolder.Text = "Add Folder";
+            bAddFolder.Click += bAddFolder_Click;
+            bRemoveFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            bRemoveFolder.Enabled = false;
+            bRemoveFolder.Image = Resources.bRemoveFolder_Image;
+            bRemoveFolder.ImageTransparentColor = Color.Magenta;
+            bRemoveFolder.Name = "bRemoveFolder";
+            bRemoveFolder.Size = new Size(23, 22);
+            bRemoveFolder.Text = "Delete Folder";
+            bRemoveFolder.Click += bRemoveFolder_Click;
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 25);
+            bAddString.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            bAddString.Image = Resources.bAddString_Image;
+            bAddString.ImageTransparentColor = Color.Magenta;
+            bAddString.Name = "bAddString";
+            bAddString.Size = new Size(23, 22);
+            bAddString.Text = "Add String";
+            bAddString.Click += bAddString_Click;
+            bRemoveString.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            bRemoveString.Enabled = false;
+            bRemoveString.Image = Resources.bRemoveString_Image;
+            bRemoveString.ImageTransparentColor = Color.Magenta;
+            bRemoveString.Name = "bRemoveString";
+            bRemoveString.Size = new Size(23, 22);
+            bRemoveString.Text = "Delete String";
+            bRemoveString.Click += bRemoveString_Click;
+            bSelect.Alignment = ToolStripItemAlignment.Right;
+            bSelect.Enabled = false;
+            bSelect.Image = Resources.bSelect_Image;
+            bSelect.ImageTransparentColor = Color.Magenta;
+            bSelect.Name = "bSelect";
+            bSelect.Size = new Size(58, 22);
+            bSelect.Text = "Select";
+            bSelect.Click += bSelect_Click;
+            bCancel.Alignment = ToolStripItemAlignment.Right;
+            bCancel.Enabled = false;
+            bCancel.Image = Resources.bCancel_Image;
+            bCancel.ImageTransparentColor = Color.Magenta;
+            bCancel.Name = "bCancel";
+            bCancel.Size = new Size(63, 22);
+            bCancel.Text = "Cancel";
+            bCancel.Click += bCancel_Click;
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 25);
+            bInsert.DropDownItems.AddRange(new ToolStripItem[]
+            {
+                tsmControls,
+                tsmNames,
+                tsmStats,
+                tsmLetters,
+                tsmValues
+            });
+            bInsert.Enabled = false;
+            bInsert.Image = Resources.bInsert_Image;
+            bInsert.ImageTransparentColor = Color.Magenta;
+            bInsert.Name = "bInsert";
+            bInsert.Size = new Size(65, 22);
+            bInsert.Text = "Insert";
+            tsmControls.Name = "tsmControls";
+            tsmControls.Size = new Size(165, 22);
+            tsmControls.Text = "Controls";
+            tsmNames.Name = "tsmNames";
+            tsmNames.Size = new Size(165, 22);
+            tsmNames.Text = "Character Names";
+            tsmStats.Name = "tsmStats";
+            tsmStats.Size = new Size(165, 22);
+            tsmStats.Text = "Character Stats";
+            tsmLetters.Name = "tsmLetters";
+            tsmLetters.Size = new Size(165, 22);
+            tsmLetters.Text = "PSI Levels";
+            tsmValues.DropDownItems.AddRange(new ToolStripItem[]
+            {
+                moneyToolStripMenuItem
+            });
+            tsmValues.Name = "tsmValues";
+            tsmValues.Size = new Size(165, 22);
+            tsmValues.Text = "Values";
+            moneyToolStripMenuItem.Name = "moneyToolStripMenuItem";
+            moneyToolStripMenuItem.Size = new Size(111, 22);
+            moneyToolStripMenuItem.Text = "Money";
+            mainSplit.Dock = DockStyle.Fill;
+            mainSplit.Location = new Point(0, 25);
+            mainSplit.Name = "mainSplit";
+            mainSplit.Panel1.Controls.Add(tvStrings);
+            mainSplit.Panel2.Controls.Add(tbString);
+            mainSplit.Size = new Size(624, 336);
+            mainSplit.SplitterDistance = 207;
+            mainSplit.TabIndex = 1;
+            ilTree.ImageStream = Resources.ilTree_ImageStream;
+            ilTree.TransparentColor = Color.Transparent;
+            ilTree.Images.SetKeyName(0, "folderClosed");
+            ilTree.Images.SetKeyName(1, "folderOpen");
+            ilTree.Images.SetKeyName(2, "text");
+            tbString.Dock = DockStyle.Fill;
+            tbString.Enabled = false;
+            tbString.Font = new Font("Lucida Console", 9.75f, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tbString.Location = new Point(0, 0);
+            tbString.Multiline = true;
+            tbString.Name = "tbString";
+            tbString.Size = new Size(413, 336);
+            tbString.TabIndex = 0;
+            tvStrings.AllowDrop = true;
+            tvStrings.Dock = DockStyle.Fill;
+            tvStrings.DragThreshold = 30;
+            tvStrings.HideSelection = false;
+            tvStrings.ImageIndex = 0;
+            tvStrings.ImageList = ilTree;
+            tvStrings.Location = new Point(0, 0);
+            tvStrings.Name = "tvStrings";
+            tvStrings.PathSeparator = ".";
+            tvStrings.SelectedImageIndex = 0;
+            tvStrings.Size = new Size(207, 336);
+            tvStrings.Sorted = true;
+            tvStrings.TabIndex = 0;
+            tvStrings.BeforeSelect += tvStrings_BeforeSelect;
+            tvStrings.AfterSelect += tvStrings_AfterSelect;
+            tvStrings.DragDrop += tvStrings_DragDrop;
+            base.AutoScaleDimensions = new SizeF(6f, 13f);
+            base.AutoScaleMode = AutoScaleMode.Font;
+            base.ClientSize = new Size(624, 361);
+            base.Controls.Add(mainSplit);
+            base.Controls.Add(tsStrings);
+            base.MinimizeBox = false;
+            MinimumSize = new Size(500, 320);
+            base.Name = "StringDialog";
+            base.ShowIcon = false;
+            base.ShowInTaskbar = false;
+            base.StartPosition = FormStartPosition.CenterParent;
+            Text = "Strings";
+            base.FormClosing += StringDialog_FormClosing;
+            base.Load += StringDialog_Load;
+            tsStrings.ResumeLayout(false);
+            tsStrings.PerformLayout();
+            mainSplit.Panel1.ResumeLayout(false);
+            mainSplit.Panel2.ResumeLayout(false);
+            mainSplit.Panel2.PerformLayout();
+            mainSplit.EndInit();
+            mainSplit.ResumeLayout(false);
+            base.ResumeLayout(false);
+            base.PerformLayout();
+        }
+        private readonly StringFile stringFile;
+        private RufiniString selectedString;
+        private RufiniString initialSelection;
+        private readonly bool selectMode;
+        private bool madeChanges;
+        private IContainer components;
+        private ToolStrip tsStrings;
+        private ToolStripButton bAddFolder;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton bAddString;
+        private ToolStripButton bRemoveString;
+        private ToolStripButton bSelect;
+        private ToolStripButton bCancel;
+        private SplitContainer mainSplit;
+        private TextBox tbString;
+        private ToolStripButton bRemoveFolder;
+        private ImageList ilTree;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripDropDownButton bInsert;
+        private ToolStripMenuItem tsmNames;
+        private ToolStripMenuItem tsmStats;
+        private ToolStripMenuItem tsmLetters;
+        private ToolStripMenuItem tsmValues;
+        private ToolStripMenuItem moneyToolStripMenuItem;
+        private ToolStripMenuItem tsmControls;
+        private DraggableTreeView tvStrings;
+        private ToolStripButton bSave;
+        private ToolStripSeparator toolStripSeparator3;
+    }
 }
